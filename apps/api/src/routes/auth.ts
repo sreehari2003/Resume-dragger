@@ -1,8 +1,9 @@
 /* eslint-disable import/no-cycle */
-import { Request, Response, Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import passport from 'passport';
+import jwt from 'jsonwebtoken';
+import { UserSession } from './types';
 import { userControl } from '../controller/functions';
-import { UserBody } from './types';
 
 const router = Router();
 
@@ -10,29 +11,39 @@ router.get('/google', passport.authenticate('google'));
 router.get(
     '/google/redirect',
     passport.authenticate('google', {
-        session: false,
+        session: true,
         scope: ['profile', 'email'],
+        failureRedirect: 'http://127.0.0.1:5173?fail=true',
     }),
-    (req: Request, res: Response) => {
-        if (!req.user) {
-            res.status(401).json({
-                ok: false,
-                message: 'login/signup failed',
-            });
-        }
-        const currentUser = req.user as UserBody;
-        const user = userControl(currentUser);
-        if (!user) {
-            res.status(401).json({
-                ok: false,
-                message: 'login/signup failed',
-            });
-        }
-        res.status(200).json({
-            ok: true,
-            user,
-            message: 'user was authenticated successfully',
-        });
+    async (req: Request, res: Response) => {
+        const sess = req.user as UserSession;
+
+        const user = {
+            name: sess.displayName,
+            email: sess.emails[0].value,
+            picture: sess.photos[0].value,
+        };
+        const newUser = await userControl(user);
+        const token = jwt.sign(
+            {
+                data: newUser.id,
+            },
+            'secret',
+            { expiresIn: 60 * 60 }
+        );
+        res.redirect(`http://127.0.0.1:5173/resume?id=${token}`);
     }
 );
+
+router.get('/logOut', (req: Request, res: Response, next: NextFunction) => {
+    req.logout((err) => {
+        if (err) {
+            return next(err);
+        }
+        return next(null);
+    });
+
+    res.redirect('http://127.0.0.1:5173/');
+});
+
 export default router;

@@ -1,23 +1,42 @@
 /* eslint-disable react/no-array-index-key */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Flex } from '@chakra-ui/react';
+import { useSearchParams } from 'react-router-dom';
+import axios from 'axios';
 import { MainLoader } from '../../components/Loader';
 import { useResume } from '../../hooks';
 import { File } from '../../components/cards';
 import { WithSidebar, Topbar } from '../../layout';
 
 const Index = () => {
+    const [searchParams] = useSearchParams();
+    useEffect(() => {
+        (async () => {
+            axios.get(`http://localhost:8080/user/${localStorage.getItem('token')}`, {
+                withCredentials: true,
+            });
+        })();
+    }, []);
+
+    useEffect(() => {
+        if (searchParams.get('id')) {
+            localStorage.setItem('token', searchParams.get('id')!);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams]);
+
     const { data, isLoading } = useResume();
 
     if (isLoading) {
         return (
             <>
                 <Topbar />
-                <MainLoader />
+                <WithSidebar>
+                    <MainLoader />
+                </WithSidebar>
             </>
         );
     }
-
     return (
         <>
             <Topbar />
