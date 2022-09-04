@@ -12,8 +12,6 @@
         "@chakra-ui/react": "^2.3.1",
         "@emotion/react": "^11.10.4",
         "@emotion/styled": "^11.10.4",
-        "@types/react-beautiful-dnd": "^13.1.2",
-        "@types/react-pdf": "^5.7.2",
         "axios": "^0.27.2",
         "framer-motion": "^7.2.1",
         "react": "^18.2.0",
@@ -26,7 +24,9 @@
     },
     "devDependencies": {
         "@types/react": "^18.0.17",
+        "@types/react-beautiful-dnd": "^13.1.2",
         "@types/react-dom": "^18.0.6",
+        "@types/react-pdf": "^5.7.2",
         "@vitejs/plugin-react": "^2.0.1",
         "vite": "^3.0.7"
     }
