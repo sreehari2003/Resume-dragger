@@ -44,7 +44,7 @@ export const newFolder = catchAsync(async (req: Request, res: Response, next: Ne
 export const userControl = async (body: UserBody) => {
     const checkUser = await prisma.user.findUnique({
         where: {
-            email: body._json.email,
+            email: body.email,
         },
     });
     if (checkUser) {
@@ -52,8 +52,8 @@ export const userControl = async (body: UserBody) => {
     }
     const response = await prisma.user.create({
         data: {
-            name: body._json.name,
-            email: body._json.email,
+            name: body.name,
+            email: body.email,
             folder: {},
         },
     });

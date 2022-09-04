@@ -1,6 +1,5 @@
 import passport from 'passport';
 import { Strategy, VerifyCallback, Profile } from 'passport-google-oauth20';
-// import { isExist } from '../../server/middleware/isAuthExist';
 
 passport.use(
     new Strategy(
@@ -23,9 +22,7 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
-    done(user);
+    done(null, user);
 });
 
-passport.deserializeUser((user, done) => {
-    done(user);
-});
+passport.deserializeUser((user: Profile, done) => done(null, user));
