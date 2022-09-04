@@ -1,44 +1,38 @@
-import { Button, Flex, Heading, useDisclosure } from '@chakra-ui/react';
 import React from 'react';
+import { Box, Button, Flex, Heading, useDisclosure } from '@chakra-ui/react';
 import { AiOutlinePlus } from 'react-icons/ai';
-import { Droppable } from 'react-beautiful-dnd';
 import { NewFolder } from '../components/cards';
 
-export const SideBar = ({ children }: { children: React.ReactNode }) => {
+export const SideBar = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     return (
-        <>
+        <Box position="fixed">
             <NewFolder isOpen={isOpen} onClose={onClose} />
-            <Droppable droppableId="layout">
-                {(provided) => (
-                    <div ref={provided.innerRef} {...provided.droppableProps}>
-                        <Flex position="relative">
-                            <Flex
-                                flexDirection="column"
-                                width="200px"
-                                bg="blackAlpha.400"
-                                height="100vh"
-                                position="sticky"
-                                borderRadius="14px"
-                                p="4"
-                            >
-                                <Heading as="h4" size="md" textAlign="center">
-                                    All Folders
-                                </Heading>
-                                <Button
-                                    mt="14px"
-                                    display="flex"
-                                    justifyContent="space-around"
-                                    onClick={onOpen}
-                                >
-                                    new folder <AiOutlinePlus />
-                                </Button>
-                            </Flex>
-                            {children}
-                        </Flex>
-                    </div>
-                )}
-            </Droppable>
-        </>
+            <Flex>
+                <Box>
+                    <Flex
+                        flexDirection="column"
+                        width="200px"
+                        bg="blackAlpha.400"
+                        height="100vh"
+                        borderRadius="14px"
+                        position="relative"
+                        p="4"
+                    >
+                        <Button
+                            mb="14px"
+                            display="flex"
+                            justifyContent="space-around"
+                            onClick={onOpen}
+                        >
+                            new folder <AiOutlinePlus />
+                        </Button>
+                        <Heading as="h4" size="md" textAlign="center">
+                            Folders
+                        </Heading>
+                    </Flex>
+                </Box>
+            </Flex>
+        </Box>
     );
 };
