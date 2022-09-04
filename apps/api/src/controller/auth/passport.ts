@@ -8,6 +8,7 @@ passport.use(
             clientID: process.env.CLIENT_ID!,
             clientSecret: process.env.CLIENT_SECRET!,
             callbackURL: 'http://localhost:8080/auth/google/redirect',
+            // passReqToCallback: true,
             scope: ['profile', 'email'],
         },
         async (
@@ -16,12 +17,7 @@ passport.use(
             profile: Profile,
             done: VerifyCallback
         ) => {
-            if (profile && profile.emails) {
-                // email = profile.emails[0].value;
-            }
-            // const user = isExist(email);
-
-            return done(null, profile);
+            done(null, profile);
         }
     )
 );

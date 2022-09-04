@@ -1,11 +1,14 @@
+/* eslint-disable no-underscore-dangle */
 import { NextFunction, Request, Response } from 'express';
+import { UserBody } from 'src/routes/types';
 import { catchAsync, AppError } from '../../utils';
+// eslint-disable-next-line import/no-cycle
 import { prisma } from '../../server/index';
 
 export const newFolder = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const user = await prisma.user.findUnique({
         select: {
-            Folder: true,
+            folder: true,
         },
         where: {
             email: req.body.email,
@@ -14,19 +17,45 @@ export const newFolder = catchAsync(async (req: Request, res: Response, next: Ne
     if (!user) {
         return next(new AppError('user not found', 404));
     }
-    // const folderIds = user?.Folder.map((el) => el);
-    // const newData = [...folderIds, req.body.data];
-    await prisma.user.update({
+
+    const data = await prisma.user.update({
         where: {
             email: req.body.email,
         },
         data: {
-            // Folder: newData,
+            folder: {
+                create: [
+                    {
+                        name: req.body.data.name,
+                        File: {},
+                    },
+                ],
+            },
         },
     });
 
     return res.status(200).json({
         ok: true,
-        message: 'folder was updated successfully',
+        message: 'folder was created successfully',
+        data,
     });
 });
+
+export const userControl = async (body: UserBody) => {
+    const checkUser = await prisma.user.findUnique({
+        where: {
+            email: body._json.email,
+        },
+    });
+    if (checkUser) {
+        return checkUser;
+    }
+    const response = await prisma.user.create({
+        data: {
+            name: body._json.name,
+            email: body._json.email,
+            folder: {},
+        },
+    });
+    return response;
+};

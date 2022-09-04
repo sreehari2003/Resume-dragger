@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import session from 'express-session';
 import { PrismaClient } from '@prisma/client';
 import { AppError } from '../utils/appError';
+// eslint-disable-next-line import/no-cycle
 import AuthRoute from '../routes/auth';
 
 dotenv.config();
