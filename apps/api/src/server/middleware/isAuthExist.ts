@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { catchAsync } from '../../utils/catchAsync';
@@ -21,16 +22,20 @@ export const isAuth = catchAsync(async (req: Request, _res: Response, next: Next
 
     // 2)verify the token !
 
-    const decoded = jwt.verify(token, 'secret');
+    interface Token {
+        data: string;
+    }
+
+    const decoded = jwt.verify(token, 'secret') as Token;
     if (!decoded) {
         return next(new AppError('user does not exist', 401));
     }
-    console.log(decoded);
+
     // 3)check user exist ?
 
     const checkUser = await prisma.user.findUnique({
         where: {
-            id: decoded as string,
+            id: decoded.data as string,
         },
     });
 
@@ -39,5 +44,6 @@ export const isAuth = catchAsync(async (req: Request, _res: Response, next: Next
     }
 
     // grant access to protected route
+    req.user = checkUser;
     next();
 });

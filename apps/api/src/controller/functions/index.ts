@@ -5,28 +5,21 @@ import { catchAsync, AppError } from '../../utils';
 // eslint-disable-next-line import/no-cycle
 import { prisma } from '../../server/index';
 
-export const newFolder = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const user = await prisma.user.findUnique({
-        select: {
-            folder: true,
-        },
-        where: {
-            email: req.body.email,
-        },
-    });
-    if (!user) {
-        return next(new AppError('user not found', 404));
-    }
+interface MongoUser {
+    id: string;
+}
 
+export const newFolder = catchAsync(async (req: Request, res: Response) => {
+    const Authuser = req.user as MongoUser;
     const data = await prisma.user.update({
         where: {
-            email: req.body.email,
+            id: Authuser.id,
         },
         data: {
             folder: {
                 create: [
                     {
-                        name: req.body.data.name,
+                        name: req.body.name,
                         File: {},
                     },
                 ],
@@ -59,3 +52,39 @@ export const userControl = async (body: UserBody) => {
     });
     return response;
 };
+
+export const moveFile = catchAsync(async (req: Request, res: Response) => {
+    const { data } = req.body;
+    const newFile = await prisma.user.update({
+        where: {
+            email: data.email,
+        },
+        data: {
+            folder: {
+                create: [
+                    {
+                        name: req.body.data.name,
+                        File: {},
+                    },
+                ],
+            },
+        },
+    });
+    return res.status(200).json({ ok: true, data: newFile });
+});
+
+export const getFolders = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const user = req.user as MongoUser;
+    if (!user) {
+        return next(new AppError('user does not exist', 401));
+    }
+    const folders = await prisma.folder.findMany({
+        where: {
+            userId: user.id,
+        },
+    });
+    return res.status(200).json({
+        ok: true,
+        data: folders,
+    });
+});

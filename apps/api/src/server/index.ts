@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import express, { Express, Request, Response, NextFunction } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
@@ -6,8 +7,8 @@ import dotenv from 'dotenv';
 import session from 'express-session';
 import { PrismaClient } from '@prisma/client';
 import { AppError } from '../utils/appError';
-// eslint-disable-next-line import/no-cycle
 import AuthRoute from '../routes/auth';
+import userActions from '../routes/actions';
 
 dotenv.config();
 require('../controller/auth/passport');
@@ -22,6 +23,13 @@ async function main() {
     console.log('Connected to Prisma and mongoDB');
 }
 main();
+
+app.use(
+    cors({
+        origin: ['http://127.0.0.1:5173'],
+        credentials: true,
+    })
+);
 
 app.use(
     session({
@@ -40,23 +48,17 @@ app.use(morgan('dev'));
 app.get('/', (_req, res: Response) => {
     res.status(200).json({
         ok: true,
-        message: 'app running on port 8080',
+        message: 'app running succesfully',
     });
 });
 
 app.use('/auth', AuthRoute);
+app.use('/api', userActions);
 
 // all = get,post,etc etc requests
 app.all('*', (req: Request, _res: Response, next: NextFunction) => {
     next(new AppError(`The requested page ${req.originalUrl} was not found`, 404));
 });
-
-app.use(
-    cors({
-        origin: ['http://localhost:3000', 'http://localhost:3001'],
-        credentials: true,
-    })
-);
 
 interface ErrorWithStatus extends Error {
     status: string;

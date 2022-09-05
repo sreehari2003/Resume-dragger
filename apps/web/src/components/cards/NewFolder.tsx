@@ -8,8 +8,11 @@ import {
     Button,
     Input,
     Text,
+    useToast,
 } from '@chakra-ui/react';
+
 import React, { useRef, useState } from 'react';
+import { AxiosHandler } from '../../api';
 
 interface PropThin {
     isOpen: boolean;
@@ -17,6 +20,7 @@ interface PropThin {
 }
 
 export const NewFolder = ({ isOpen, onClose }: PropThin) => {
+    const toast = useToast();
     const cancelRef = useRef(null);
     const nameRef = useRef<HTMLInputElement>(null);
     const [err, setErr] = useState<boolean>(false);
@@ -27,7 +31,27 @@ export const NewFolder = ({ isOpen, onClose }: PropThin) => {
         } else {
             setErr(false);
             // send post req to backend
-
+            const senData = async () => {
+                const { data } = await AxiosHandler.post('/api/folder', {
+                    name: nameRef.current?.value,
+                });
+                if (data.ok) {
+                    toast({
+                        title: 'File created successfully',
+                        status: 'success',
+                        duration: 9000,
+                        isClosable: true,
+                    });
+                } else {
+                    toast({
+                        title: 'Couldnt create folder',
+                        duration: 9000,
+                        status: 'error',
+                        isClosable: true,
+                    });
+                }
+            };
+            senData();
             onClose();
         }
     };
