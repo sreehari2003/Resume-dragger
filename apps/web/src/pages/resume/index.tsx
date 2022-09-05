@@ -2,30 +2,30 @@
 import React, { useEffect } from 'react';
 import { Flex } from '@chakra-ui/react';
 import { useSearchParams } from 'react-router-dom';
-import axios from 'axios';
+import { AxiosHandler } from '../../api/index';
 import { MainLoader } from '../../components/Loader';
 import { useResume } from '../../hooks';
 import { File } from '../../components/cards';
 import { WithSidebar, Topbar } from '../../layout';
 
 const Index = () => {
+    // fetching the resumes from provided api
+    const { data, isLoading } = useResume();
+    // fetching the token from query
     const [searchParams] = useSearchParams();
     useEffect(() => {
         (async () => {
-            axios.get(`http://localhost:8080/user/${localStorage.getItem('token')}`, {
-                withCredentials: true,
-            });
+            AxiosHandler.get(`/user}`);
         })();
     }, []);
 
+    // setting the token to localStorage
     useEffect(() => {
         if (searchParams.get('id')) {
             localStorage.setItem('token', searchParams.get('id')!);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchParams]);
-
-    const { data, isLoading } = useResume();
 
     if (isLoading) {
         return (
