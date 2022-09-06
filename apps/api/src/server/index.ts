@@ -1,19 +1,20 @@
 /* eslint-disable import/no-cycle */
-import express, { Express, Request, Response, NextFunction } from 'express';
+import express, { Application, Request, Response, NextFunction } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import passport from 'passport';
+
 import dotenv from 'dotenv';
 import session from 'express-session';
 import { PrismaClient } from '@prisma/client';
-import { AppError } from '../utils/appError';
+import AppError from '../utils/appError';
 import AuthRoute from '../routes/auth';
 import userActions from '../routes/actions';
 
-dotenv.config();
 require('../controller/auth/passport');
 
-export const app: Express = express();
+export const app: Application = express();
+dotenv.config();
 export const prisma = new PrismaClient();
 
 async function main() {
@@ -22,11 +23,17 @@ async function main() {
     // eslint-disable-next-line no-console
     console.log('Connected to Prisma and mongoDB');
 }
-main();
+main()
+    .catch((e) => {
+        throw e;
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
+    });
 
 app.use(
     cors({
-        origin: ['http://127.0.0.1:5173'],
+        origin: ['http://127.0.0.1:5173', 'https://dragger.vercel.app'],
         credentials: true,
     })
 );
@@ -49,6 +56,7 @@ app.get('/', (_req, res: Response) => {
     res.status(200).json({
         ok: true,
         message: 'app running succesfully',
+        port: process.env.PORT,
     });
 });
 
@@ -60,13 +68,9 @@ app.all('*', (req: Request, _res: Response, next: NextFunction) => {
     next(new AppError(`The requested page ${req.originalUrl} was not found`, 404));
 });
 
-interface ErrorWithStatus extends Error {
-    status: string;
-    statusCode: number;
-}
-
 // global error handler
-app.use((err: ErrorWithStatus, _req: Request, res: Response) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     // eslint-disable-next-line no-param-reassign
     err.statusCode = err.statusCode || 500;
     // eslint-disable-next-line no-param-reassign

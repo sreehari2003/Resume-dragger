@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { catchAsync } from '../../utils/catchAsync';
 import { prisma } from '../index';
-import { AppError } from '../../utils/appError';
+import AppError from '../../utils/appError';
 
 // eslint-disable-next-line consistent-return
 export const isAuth = catchAsync(async (req: Request, _res: Response, next: NextFunction) => {
@@ -41,7 +41,7 @@ export const isAuth = catchAsync(async (req: Request, _res: Response, next: Next
     });
 
     if (!checkUser) {
-        return next(new AppError('user does not exist', 401));
+        return next(new AppError('couldnt find the user try agaiin later', 401));
     }
 
     // grant access to protected route
