@@ -29,13 +29,13 @@ router.get(
                 data: newUser.id,
             },
             'secret',
-            { expiresIn: 60 * 60 }
+            {}
         );
         res.redirect(`http://127.0.0.1:5173/resume?id=${token}`);
     }
 );
 
-router.get('/logOut', (req: Request, res: Response, next: NextFunction) => {
+router.get('/logout', (req: Request, res: Response, next: NextFunction) => {
     req.logout((err) => {
         if (err) {
             return next(err);
@@ -43,7 +43,7 @@ router.get('/logOut', (req: Request, res: Response, next: NextFunction) => {
         return next(null);
     });
 
-    res.redirect('http://127.0.0.1:5173/');
+    res.redirect('http://127.0.0.1:5173?logout=true');
 });
 
 export default router;

@@ -1,9 +1,18 @@
 import { Box, Button, Flex, Heading, List, ListIcon, ListItem } from '@chakra-ui/react';
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { AiFillCheckCircle, AiFillGoogleCircle } from 'react-icons/ai';
+import { useNavigate } from 'react-router-dom';
 import { Topbar } from '../layout';
 
 const Index = () => {
+    const navigate = useNavigate();
+    const token = localStorage.getItem('token');
+    useEffect(() => {
+        if (token) {
+            navigate('/resume');
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [token]);
     const LoginRef = useRef<HTMLDivElement>(null);
     const scrollToLogin = () => LoginRef.current?.scrollIntoView();
     const Login = () => {

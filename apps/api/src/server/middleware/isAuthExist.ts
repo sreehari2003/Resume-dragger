@@ -27,6 +27,7 @@ export const isAuth = catchAsync(async (req: Request, _res: Response, next: Next
     }
 
     const decoded = jwt.verify(token, 'secret') as Token;
+
     if (!decoded) {
         return next(new AppError('user does not exist', 401));
     }

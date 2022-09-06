@@ -1,7 +1,6 @@
 import { Box, Flex, Heading, Button } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 interface Scroll {
     // eslint-disable-next-line react/require-default-props
@@ -9,6 +8,11 @@ interface Scroll {
 }
 
 export const Topbar = ({ scrollToLogin }: Scroll) => {
+    const location = useLocation();
+    const logOut = async () => {
+        localStorage.removeItem('token');
+        window.location.reload();
+    };
     const [y, setY] = useState(window.screenY);
 
     const handleNavigation = (e: any) => {
@@ -41,15 +45,28 @@ export const Topbar = ({ scrollToLogin }: Scroll) => {
                     </Flex>
                 </Link>
             </Flex>
-            <Button
-                colorScheme="red
+            {location.pathname === '/' && (
+                <Button
+                    colorScheme="red
         "
-                bg="red"
-                color="white"
-                onClick={scrollToLogin}
-            >
-                Login
-            </Button>
+                    bg="red"
+                    color="white"
+                    onClick={scrollToLogin}
+                >
+                    Login
+                </Button>
+            )}
+            {location.pathname !== '/' && (
+                <Button
+                    colorScheme="red
+        "
+                    bg="red"
+                    color="white"
+                    onClick={logOut}
+                >
+                    Logout
+                </Button>
+            )}
         </Box>
     );
 };
