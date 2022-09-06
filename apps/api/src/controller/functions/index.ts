@@ -1,7 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 import { NextFunction, Request, Response } from 'express';
 import { UserBody } from 'src/routes/types';
-import { catchAsync, AppError } from '../../utils';
+import { catchAsync } from '../../utils';
+import AppError from '../../utils/appError';
 // eslint-disable-next-line import/no-cycle
 import { prisma } from '../../server/index';
 
@@ -60,22 +61,21 @@ export const userControl = async (body: UserBody) => {
 
 export const moveFile = catchAsync(async (req: Request, res: Response) => {
     const { data } = req.body;
-    const newFile = await prisma.user.update({
+    const newFile = await prisma.folder.update({
         where: {
-            email: data.email,
+            name: data.name,
         },
         data: {
-            folder: {
+            File: {
                 create: [
                     {
-                        name: req.body.data.name,
-                        File: {},
+                        name: data.name,
                     },
                 ],
             },
         },
     });
-    return res.status(200).json({ ok: true, data: newFile });
+    return res.status(200).json({ ok: true, data: newFile, message: 'file moved successfully' });
 });
 
 export const getFolders = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -91,5 +91,28 @@ export const getFolders = catchAsync(async (req: Request, res: Response, next: N
     return res.status(200).json({
         ok: true,
         data: folders,
+        message: 'request successfll',
+    });
+});
+
+export const findUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const user = req.user as MongoUser;
+    const result = await prisma.user.findUnique({
+        where: {
+            id: user.id,
+        },
+        select: {
+            email: true,
+            id: true,
+            folder: true,
+        },
+    });
+    if (!result) {
+        return next(new AppError('user does not exist', 401));
+    }
+    return res.status(200).json({
+        ok: true,
+        message: 'query sucessfull',
+        data: result,
     });
 });

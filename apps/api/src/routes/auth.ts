@@ -13,7 +13,7 @@ router.get(
     passport.authenticate('google', {
         session: true,
         scope: ['profile', 'email'],
-        failureRedirect: 'http://127.0.0.1:5173?fail=true',
+        failureRedirect: 'https://dragger.vercel.app?fail=true',
     }),
     async (req: Request, res: Response) => {
         const sess = req.user as UserSession;
@@ -31,7 +31,7 @@ router.get(
             'secret',
             {}
         );
-        res.redirect(`http://127.0.0.1:5173/resume?id=${token}`);
+        res.redirect(`https://dragger.vercel.app?id=${token}`);
     }
 );
 
@@ -43,7 +43,7 @@ router.get('/logout', (req: Request, res: Response, next: NextFunction) => {
         return next(null);
     });
 
-    res.redirect('http://127.0.0.1:5173?logout=true');
+    res.redirect('https://dragger.vercel.app?logout=true');
 });
 
 export default router;
