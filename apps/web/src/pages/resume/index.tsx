@@ -4,11 +4,12 @@ import { Flex } from '@chakra-ui/react';
 import { useSearchParams } from 'react-router-dom';
 import { AxiosHandler } from '../../api/index';
 import { MainLoader } from '../../components/Loader';
-import { useResume } from '../../hooks';
+import { useResume, Protected } from '../../hooks';
 import { File } from '../../components/cards';
 import { WithSidebar, Topbar } from '../../layout';
 
 const Index = () => {
+    Protected();
     // fetching the resumes from provided api
     const { data, isLoading } = useResume();
     // fetching the token from query

@@ -1,3 +1,9 @@
 import React from 'react';
+import { Protected } from '../../hooks';
 
-export const Branch = () => <div>Hello world</div>;
+const Branch = () => {
+    Protected();
+    return <div>Hello world</div>;
+};
+
+export default Branch;

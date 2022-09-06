@@ -1,4 +1,13 @@
-import { Box, Button, Flex, Heading, Skeleton, Text, useDisclosure } from '@chakra-ui/react';
+import {
+    Box,
+    Button,
+    Center,
+    Flex,
+    Heading,
+    Skeleton,
+    Text,
+    useDisclosure,
+} from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { FcFolder } from 'react-icons/fc';
@@ -11,7 +20,11 @@ import { Info } from '../hooks/useFetch';
 export const SideBar = () => {
     const [loaded, setLoadedData] = useState<Info | null>();
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const { isLoading, data } = useFetch('/api/folder');
+    const { isLoading, data, error } = useFetch('/api/folder');
+
+    const reLoad = () => {
+        window.location.reload();
+    };
 
     useEffect(() => {
         setLoadedData(data);
@@ -19,7 +32,6 @@ export const SideBar = () => {
     }, [data]);
 
     const rerenderFolder = (dataState: Info) => {
-        console.log(dataState);
         setLoadedData(dataState);
     };
 
@@ -31,6 +43,60 @@ export const SideBar = () => {
                 <Flex>
                     <Box>
                         <Skeleton height="100vh" width="200px" borderRadius="14px" />
+                    </Box>
+                </Flex>
+            </Box>
+        );
+    }
+
+    if (error) {
+        return (
+            <Box position="fixed">
+                <NewFolder isOpen={isOpen} onClose={onClose} rerenderFolder={rerenderFolder} />
+                <Flex>
+                    <Box>
+                        <Flex
+                            flexDirection="column"
+                            width="200px"
+                            bg="blackAlpha.400"
+                            height="100vh"
+                            borderRadius="14px"
+                            position="relative"
+                            p="4"
+                        >
+                            <Button
+                                mb="14px"
+                                display="flex"
+                                justifyContent="space-around"
+                                onClick={onOpen}
+                            >
+                                new folder <AiOutlinePlus />
+                            </Button>
+                            <Heading as="h4" size="md" textAlign="center">
+                                Folders
+                            </Heading>
+                            <Box overflowY="auto">
+                                <Center minH="80vh" flexDirection="column">
+                                    <Text
+                                        color="red"
+                                        fontWeight="bold"
+                                        fontSize="30px"
+                                        fontFamily="sans-serif"
+                                    >
+                                        404
+                                    </Text>
+                                    <Text
+                                        color="red"
+                                        fontWeight="bold"
+                                        fontSize="30px"
+                                        fontFamily="sans-serif"
+                                    >
+                                        Error
+                                    </Text>
+                                    <Button onClick={reLoad}>Reload</Button>
+                                </Center>
+                            </Box>
+                        </Flex>
                     </Box>
                 </Flex>
             </Box>
