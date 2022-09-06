@@ -1,20 +1,33 @@
 import { Box, Button, Flex, Heading, Skeleton, Text, useDisclosure } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { FcFolder } from 'react-icons/fc';
 import { useNavigate } from 'react-router-dom';
 import { Droppable } from 'react-beautiful-dnd';
 import { useFetch } from '../hooks';
 import { NewFolder } from '../components/cards';
+import { Info } from '../hooks/useFetch';
 
 export const SideBar = () => {
+    const [loaded, setLoadedData] = useState<Info | null>();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { isLoading, data } = useFetch('/api/folder');
+
+    useEffect(() => {
+        setLoadedData(data);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data]);
+
+    const rerenderFolder = (dataState: Info) => {
+        console.log(dataState);
+        setLoadedData(dataState);
+    };
 
     const router = useNavigate();
     if (isLoading) {
         return (
             <Box position="fixed">
-                <NewFolder isOpen={isOpen} onClose={onClose} />
+                <NewFolder isOpen={isOpen} onClose={onClose} rerenderFolder={rerenderFolder} />
                 <Flex>
                     <Box>
                         <Skeleton height="100vh" width="200px" borderRadius="14px" />
@@ -26,7 +39,7 @@ export const SideBar = () => {
 
     return (
         <Box position="fixed">
-            <NewFolder isOpen={isOpen} onClose={onClose} />
+            <NewFolder isOpen={isOpen} onClose={onClose} rerenderFolder={rerenderFolder} />
             <Flex>
                 <Box>
                     <Flex
@@ -50,7 +63,7 @@ export const SideBar = () => {
                             Folders
                         </Heading>
                         <Box overflowY="auto">
-                            {data.data.map((el) => (
+                            {loaded?.data.map((el) => (
                                 <Droppable droppableId={el.name}>
                                     {(provided) => (
                                         <div ref={provided.innerRef} {...provided.droppableProps}>

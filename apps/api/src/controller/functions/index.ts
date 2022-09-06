@@ -11,7 +11,7 @@ interface MongoUser {
 
 export const newFolder = catchAsync(async (req: Request, res: Response) => {
     const Authuser = req.user as MongoUser;
-    const data = await prisma.user.update({
+    await prisma.user.update({
         where: {
             id: Authuser.id,
         },
@@ -26,11 +26,16 @@ export const newFolder = catchAsync(async (req: Request, res: Response) => {
             },
         },
     });
+    const folders = await prisma.folder.findMany({
+        where: {
+            userId: Authuser.id,
+        },
+    });
 
     return res.status(200).json({
         ok: true,
         message: 'folder was created successfully',
-        data,
+        data: folders,
     });
 });
 

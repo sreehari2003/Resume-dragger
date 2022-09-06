@@ -13,13 +13,15 @@ import {
 
 import React, { useRef, useState } from 'react';
 import { AxiosHandler } from '../../api';
+import { Info } from '../../hooks/useFetch';
 
 interface PropThin {
     isOpen: boolean;
     onClose: () => void;
+    rerenderFolder: (info: Info) => void;
 }
 
-export const NewFolder = ({ isOpen, onClose }: PropThin) => {
+export const NewFolder = ({ isOpen, onClose, rerenderFolder }: PropThin) => {
     const toast = useToast();
     const cancelRef = useRef(null);
     const nameRef = useRef<HTMLInputElement>(null);
@@ -42,6 +44,7 @@ export const NewFolder = ({ isOpen, onClose }: PropThin) => {
                         duration: 9000,
                         isClosable: true,
                     });
+                    rerenderFolder(data);
                 } else {
                     toast({
                         title: 'Couldnt create folder',
