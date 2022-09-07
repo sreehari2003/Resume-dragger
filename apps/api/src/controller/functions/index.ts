@@ -60,16 +60,16 @@ export const userControl = async (body: UserBody) => {
 };
 
 export const moveFile = catchAsync(async (req: Request, res: Response) => {
-    const { data } = req.body;
+    const { file, name } = req.body;
     const newFile = await prisma.folder.update({
         where: {
-            name: data.name,
+            name: file,
         },
         data: {
             File: {
                 create: [
                     {
-                        name: data.name,
+                        name,
                     },
                 ],
             },
@@ -114,5 +114,27 @@ export const findUser = catchAsync(async (req: Request, res: Response, next: Nex
         ok: true,
         message: 'query sucessfull',
         data: result,
+    });
+});
+
+export const getFile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    console.log(id);
+    if (!id) {
+        return next(new AppError('couldnt find the folder name', 401));
+    }
+    const files = await prisma.folder.findUnique({
+        where: {
+            name: id,
+        },
+        select: {
+            File: true,
+        },
+    });
+    console.log(files);
+    return res.status(200).json({
+        ok: true,
+        data: files,
+        message: 'Query was completed',
     });
 });

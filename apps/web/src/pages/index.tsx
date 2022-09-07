@@ -1,10 +1,12 @@
-import { Box, Button, Flex, Heading, List, ListIcon, ListItem } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, List, ListIcon, ListItem, useToast } from '@chakra-ui/react';
 import React, { useRef, useEffect } from 'react';
 import { AiFillCheckCircle, AiFillGoogleCircle } from 'react-icons/ai';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Topbar } from '../layout';
 
 const Index = () => {
+    const toast = useToast();
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
     useEffect(() => {
@@ -18,6 +20,21 @@ const Index = () => {
     const Login = () => {
         window.open('http://localhost:8080/auth/google/', '_self');
     };
+
+    useEffect(() => {
+        const authStatus = searchParams.get('fail');
+        if (authStatus === 'true') {
+            toast({
+                title: 'Login Failed',
+                description: 'Login with google failed please try again later',
+                status: 'error',
+                duration: 9000,
+                isClosable: true,
+            });
+            navigate('/');
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams]);
 
     return (
         <>

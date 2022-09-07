@@ -11,7 +11,7 @@ import {
 import { useEffect, useState } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { FcFolder } from 'react-icons/fc';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Droppable } from 'react-beautiful-dnd';
 import { useFetch } from '../hooks';
 import { NewFolder } from '../components/cards';
@@ -21,6 +21,7 @@ export const SideBar = () => {
     const [loaded, setLoadedData] = useState<Info | null>();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { isLoading, data, error } = useFetch('/api/folder');
+    const params = useParams();
 
     const reLoad = () => {
         window.location.reload();
@@ -36,6 +37,7 @@ export const SideBar = () => {
     };
 
     const router = useNavigate();
+
     if (isLoading) {
         return (
             <Box position="fixed">
@@ -48,7 +50,6 @@ export const SideBar = () => {
             </Box>
         );
     }
-
     if (error) {
         return (
             <Box position="fixed">
@@ -134,6 +135,7 @@ export const SideBar = () => {
                                     {(provided) => (
                                         <div ref={provided.innerRef} {...provided.droppableProps}>
                                             <Box
+                                                bg={params.id === el.name ? 'grey' : ''}
                                                 key={el.id}
                                                 p="0px 20px"
                                                 display="flex"
@@ -141,7 +143,7 @@ export const SideBar = () => {
                                                 mt="10px"
                                                 borderRadius="12px"
                                                 _hover={{ cursor: 'pointer', bg: 'grey' }}
-                                                onClick={() => router(el.name)}
+                                                onClick={() => router(`/resume/${el.name}`)}
                                             >
                                                 <FcFolder fontSize="40px" />
                                                 <Text fontSize="25px">{el.name}</Text>

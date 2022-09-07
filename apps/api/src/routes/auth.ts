@@ -31,7 +31,8 @@ router.get(
             'secret',
             {}
         );
-        res.redirect(`https://dragger.vercel.app?id=${token}`);
+        res.redirect(`http://127.0.0.1:5173/resume?id=${token}`);
+        // res.redirect(`https://dragger.vercel.app/resume?id=${token}`);
     }
 );
 

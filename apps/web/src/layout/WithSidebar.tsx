@@ -1,11 +1,34 @@
-import { Flex } from '@chakra-ui/react';
+import { Flex, useToast } from '@chakra-ui/react';
 import React from 'react';
 import { Droppable, DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { SideBar } from './SideBar';
+import { AxiosHandler } from '../api';
 
 export const WithSidebar = ({ children }: { children: React.ReactNode }) => {
-    const onDrag = (result: DropResult) => {
-        console.log(result);
+    const toast = useToast();
+    const onDrag = async (result: DropResult) => {
+        if (result.destination?.droppableId !== result.draggableId) {
+            const { data } = await AxiosHandler.post('/api/file', {
+                file: result.destination?.droppableId,
+                name: result.draggableId,
+            });
+            console.log(data);
+            if (data.ok) {
+                toast({
+                    title: 'File was moved',
+                    status: 'success',
+                    duration: 9000,
+                    isClosable: true,
+                });
+            } else {
+                toast({
+                    title: 'couldnt move file',
+                    status: 'error',
+                    duration: 9000,
+                    isClosable: true,
+                });
+            }
+        }
     };
     return (
         <DragDropContext onDragEnd={onDrag}>
