@@ -14,7 +14,7 @@ export const MainLoader = () => (
         width="85%"
     >
         <Flex
-            justifyContent="space-between"
+            justifyContent="space-around"
             flexDirection={{ base: 'column', sm: 'row' }}
             flexWrap="wrap"
         >
