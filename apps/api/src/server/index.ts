@@ -56,7 +56,6 @@ app.get('/', (_req, res: Response) => {
     res.status(200).json({
         ok: true,
         message: 'app running succesfully',
-        port: process.env.PORT,
     });
 });
 
