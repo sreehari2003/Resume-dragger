@@ -1,5 +1,5 @@
 import axios from 'axios';
-import useSwr from 'swr';
+import useSwr, { KeyedMutator } from 'swr';
 import { Info } from '../types';
 
 export interface Error {
@@ -10,6 +10,7 @@ interface ReturnVal {
     error: Error | null;
     isLoading: boolean;
     data: Info | null;
+    mutate: KeyedMutator<any>;
 }
 
 export const useResume = (): ReturnVal => {
@@ -22,7 +23,7 @@ export const useResume = (): ReturnVal => {
         });
         return data;
     };
-    const { data, error } = useSwr(URL, getData);
+    const { data, error, mutate } = useSwr(URL, getData);
 
-    return { data, error, isLoading: !error && !data };
+    return { data, error, isLoading: !error && !data, mutate };
 };

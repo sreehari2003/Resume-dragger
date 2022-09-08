@@ -11,16 +11,21 @@ import {
 import { useEffect, useState } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { FcFolder } from 'react-icons/fc';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Droppable } from 'react-beautiful-dnd';
 import { useFetch } from '../hooks';
 import { NewFolder } from '../components/cards';
 import { Info } from '../hooks/useFetch';
 
+interface Data {
+    name: string;
+    id: string;
+}
+
 export const SideBar = () => {
-    const [loaded, setLoadedData] = useState<Info | null>();
+    const [loaded, setLoadedData] = useState<Info<Data[]> | null>();
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const { isLoading, data, error } = useFetch('/api/folder');
+    const { isLoading, data } = useFetch<Data[]>('/api/folder');
     const params = useParams();
 
     const reLoad = () => {
@@ -50,7 +55,8 @@ export const SideBar = () => {
             </Box>
         );
     }
-    if (error) {
+
+    if (data) {
         return (
             <Box position="fixed">
                 <NewFolder isOpen={isOpen} onClose={onClose} rerenderFolder={rerenderFolder} />
@@ -73,29 +79,54 @@ export const SideBar = () => {
                             >
                                 new folder <AiOutlinePlus />
                             </Button>
-                            <Heading as="h4" size="md" textAlign="center">
-                                Folders
-                            </Heading>
+                            <Link to="/resume">
+                                <Heading
+                                    as="h4"
+                                    size="md"
+                                    textAlign="center"
+                                    _hover={{ cursor: 'pointer' }}
+                                >
+                                    All Folders
+                                </Heading>
+                            </Link>
                             <Box overflowY="auto">
-                                <Center minH="80vh" flexDirection="column">
-                                    <Text
-                                        color="red"
-                                        fontWeight="bold"
-                                        fontSize="30px"
-                                        fontFamily="sans-serif"
-                                    >
-                                        404
-                                    </Text>
-                                    <Text
-                                        color="red"
-                                        fontWeight="bold"
-                                        fontSize="30px"
-                                        fontFamily="sans-serif"
-                                    >
-                                        Error
-                                    </Text>
-                                    <Button onClick={reLoad}>Reload</Button>
-                                </Center>
+                                {loaded?.data.map((el, index) => (
+                                    <Droppable droppableId={el.name}>
+                                        {(provided, snapshot) => (
+                                            <div
+                                                ref={provided.innerRef}
+                                                {...provided.droppableProps}
+                                                // eslint-disable-next-line react/no-array-index-key
+                                                key={index}
+                                            >
+                                                <Box
+                                                    height="40px"
+                                                    overflow="hidden"
+                                                    bg={
+                                                        // eslint-disable-next-line no-nested-ternary
+                                                        params.id === el.name
+                                                            ? 'grey'
+                                                            : snapshot.isDraggingOver
+                                                            ? 'red'
+                                                            : ''
+                                                    }
+                                                    key={el.id}
+                                                    p="0px 20px"
+                                                    display="flex"
+                                                    justifyContent="space-between"
+                                                    mt="25px"
+                                                    borderRadius="12px"
+                                                    _hover={{ cursor: 'pointer', bg: 'grey' }}
+                                                    onClick={() => router(`/resume/${el.name}`)}
+                                                >
+                                                    <FcFolder fontSize="40px" />
+                                                    <Text fontSize="25px">{el.name}</Text>
+                                                    {provided.placeholder}
+                                                </Box>
+                                            </div>
+                                        )}
+                                    </Droppable>
+                                ))}
                             </Box>
                         </Flex>
                     </Box>
@@ -130,29 +161,25 @@ export const SideBar = () => {
                             Folders
                         </Heading>
                         <Box overflowY="auto">
-                            {loaded?.data.map((el) => (
-                                <Droppable droppableId={el.name}>
-                                    {(provided) => (
-                                        <div ref={provided.innerRef} {...provided.droppableProps}>
-                                            <Box
-                                                bg={params.id === el.name ? 'grey' : ''}
-                                                key={el.id}
-                                                p="0px 20px"
-                                                display="flex"
-                                                justifyContent="space-between"
-                                                mt="10px"
-                                                borderRadius="12px"
-                                                _hover={{ cursor: 'pointer', bg: 'grey' }}
-                                                onClick={() => router(`/resume/${el.name}`)}
-                                            >
-                                                <FcFolder fontSize="40px" />
-                                                <Text fontSize="25px">{el.name}</Text>
-                                            </Box>
-                                            {/* {provided.placeholder} */}
-                                        </div>
-                                    )}
-                                </Droppable>
-                            ))}
+                            <Center minH="80vh" flexDirection="column">
+                                <Text
+                                    color="red"
+                                    fontWeight="bold"
+                                    fontSize="30px"
+                                    fontFamily="sans-serif"
+                                >
+                                    404
+                                </Text>
+                                <Text
+                                    color="red"
+                                    fontWeight="bold"
+                                    fontSize="30px"
+                                    fontFamily="sans-serif"
+                                >
+                                    Error
+                                </Text>
+                                <Button onClick={reLoad}>Reload</Button>
+                            </Center>
                         </Box>
                     </Flex>
                 </Box>

@@ -12,7 +12,6 @@ export const WithSidebar = ({ children }: { children: React.ReactNode }) => {
                 file: result.destination?.droppableId,
                 name: result.draggableId,
             });
-            console.log(data);
             if (data.ok) {
                 toast({
                     title: 'File was moved',

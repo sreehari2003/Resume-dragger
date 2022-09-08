@@ -35,7 +35,11 @@ export const Topbar = ({ scrollToLogin }: Scroll) => {
 
     return (
         <Box display="flex" justifyContent="space-between" h={65} alignItems="center" p="6">
-            <Flex flexDirection="column" position={y > 80 ? 'fixed' : 'relative'}>
+            <Flex
+                flexDirection="column"
+                position={y > 80 ? 'fixed' : 'relative'}
+                display={y > 80 ? 'none' : 'flex'}
+            >
                 <Link to="/">
                     <Flex>
                         <Heading size="lg">Resume</Heading>
