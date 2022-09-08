@@ -119,7 +119,6 @@ export const findUser = catchAsync(async (req: Request, res: Response, next: Nex
 
 export const getFile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
-    console.log(id);
     if (!id) {
         return next(new AppError('couldnt find the folder name', 401));
     }
@@ -131,10 +130,9 @@ export const getFile = catchAsync(async (req: Request, res: Response, next: Next
             File: true,
         },
     });
-    console.log(files);
     return res.status(200).json({
         ok: true,
-        data: files,
+        data: files?.File,
         message: 'Query was completed',
     });
 });

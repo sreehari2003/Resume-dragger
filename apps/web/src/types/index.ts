@@ -5,3 +5,7 @@ export interface Res {
 export interface Info {
     record: Res[];
 }
+
+export interface Child {
+    children: React.ReactNode;
+}
