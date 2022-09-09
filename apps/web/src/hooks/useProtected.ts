@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-export const Protected = () => {
+export const useProtected = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const token = localStorage.getItem('token');

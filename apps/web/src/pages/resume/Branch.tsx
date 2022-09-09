@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Flex, Heading } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
 import { MainLoader } from '../../components/Loader';
-import { Protected, useFetch } from '../../hooks';
+import { useProtected, useFetch } from '../../hooks';
 import { File } from '../../components/cards';
 import { WithSidebar, Topbar } from '../../layout';
 
@@ -12,7 +12,7 @@ interface Data {
 }
 
 const Branch = () => {
-    Protected();
+    useProtected();
     const params = useParams();
     // fetching the resumes from provided api
 
