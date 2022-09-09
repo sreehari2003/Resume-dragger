@@ -6,7 +6,8 @@ passport.use(
         {
             clientID: process.env.CLIENT_ID!,
             clientSecret: process.env.CLIENT_SECRET!,
-            callbackURL: 'http://localhost:8080/auth/google/redirect',
+            // callbackURL: 'http://localhost:8080/auth/google/redirect',
+            callbackURL: `${process.env.API_URL}/auth/google/redirect`,
             // passReqToCallback: true,
             scope: ['profile', 'email'],
         },

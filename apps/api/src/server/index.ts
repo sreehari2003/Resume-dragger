@@ -11,10 +11,10 @@ import AppError from '../utils/appError';
 import AuthRoute from '../routes/auth';
 import userActions from '../routes/actions';
 
+dotenv.config();
 require('../controller/auth/passport');
 
 export const app: Application = express();
-dotenv.config();
 export const prisma = new PrismaClient();
 
 async function main() {

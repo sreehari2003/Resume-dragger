@@ -6,5 +6,7 @@ declare namespace NodeJS {
         CLIENT_SECRET: string;
         JWT_SECRET: string;
         NODE_ENV: string;
+        CLIENT_URL: string;
+        API_URL: string;
     }
 }
