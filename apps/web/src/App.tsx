@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Pageone from './pages';
 import Resume from './pages/resume';
 import Branch from './pages/resume/Branch';
+import Error from './pages/404';
 
 const App = () => {
     const { colorMode, toggleColorMode } = useColorMode();
@@ -20,6 +21,7 @@ const App = () => {
                 <Route path="/" element={<Pageone />} />
                 <Route path="/resume" element={<Resume />} />
                 <Route path="/resume/:id" element={<Branch />} />
+                <Route path="*" element={<Error />} />
             </Routes>
         </BrowserRouter>
     );
