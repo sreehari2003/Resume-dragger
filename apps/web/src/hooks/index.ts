@@ -1,3 +1,3 @@
 export { useResume } from './useResume';
 export { useFetch } from './useFetch';
-export { Protected } from './Protected';
+export { useProtected } from './useProtected';
