@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AxiosHandler } from '../api';
 import { Child } from '../types';
 
@@ -12,8 +12,9 @@ export const AuthCtx = createContext({} as Dt);
 const AuthContext = ({ children }: Child) => {
     const navigate = useNavigate();
     const [user, setUser] = useState<any>(null);
+    const token = localStorage.getItem('token');
+    const [searchParams] = useSearchParams();
     useEffect(() => {
-        const token = localStorage.getItem('token');
         if (token) {
             (async () => {
                 try {
@@ -21,13 +22,14 @@ const AuthContext = ({ children }: Child) => {
                     if (!data || !data.ok) throw new Error();
                     setUser(data);
                 } catch (err) {
-                    navigate('/?fail=true');
+                    window.location.reload();
+                    // navigate('/?fail=true');
                 }
             })();
         } else {
             navigate('/');
         }
-    }, [navigate]);
+    }, [navigate, token, searchParams]);
 
     const value = useMemo(
         () => ({

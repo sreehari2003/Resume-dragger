@@ -35,7 +35,8 @@ const Branch = () => {
                 <WithSidebar>
                     <Flex p="8" flexWrap="wrap" position="absolute" left="200">
                         {vars.data.map((el, index) => (
-                            <File name={el.name} resume={el.name} id={index} key={el.id} />
+                            // eslint-disable-next-line react/no-array-index-key
+                            <File name={el.name} resume={el.name} id={index} key={index} />
                         ))}
                     </Flex>
                 </WithSidebar>
