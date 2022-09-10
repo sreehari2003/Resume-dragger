@@ -27,7 +27,6 @@ export const SideBar = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { isLoading, data } = useFetch<Data[]>('/api/folder');
     const params = useParams();
-
     const reLoad = () => {
         window.location.reload();
     };
@@ -83,7 +82,10 @@ export const SideBar = () => {
                                 <Heading
                                     as="h4"
                                     size="md"
+                                    bg={Object.keys(params).length === 0 ? 'grey' : ''}
                                     textAlign="center"
+                                    borderRadius="12px"
+                                    p="9px 20px"
                                     _hover={{ cursor: 'pointer' }}
                                 >
                                     All Folders
@@ -104,10 +106,10 @@ export const SideBar = () => {
                                                     overflow="hidden"
                                                     bg={
                                                         // eslint-disable-next-line no-nested-ternary
-                                                        params.id === el.name
-                                                            ? 'grey'
-                                                            : snapshot.isDraggingOver
+                                                        snapshot.isDraggingOver
                                                             ? 'red'
+                                                            : params.id === el.name
+                                                            ? 'grey'
                                                             : ''
                                                     }
                                                     key={el.id}
