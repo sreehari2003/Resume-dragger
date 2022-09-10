@@ -1,4 +1,6 @@
 import { Flex, useToast } from '@chakra-ui/react';
+// import { useSWRConfig } from 'swr';
+// import { useParams } from 'react-router-dom';
 import React from 'react';
 import { Droppable, DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { SideBar } from './SideBar';
@@ -6,6 +8,9 @@ import { AxiosHandler } from '../api';
 
 export const WithSidebar = ({ children }: { children: React.ReactNode }) => {
     const toast = useToast();
+    // const params = useParams();
+    // const { mutate } = useSWRConfig();
+
     const onDrag = async (result: DropResult) => {
         if (result.destination?.droppableId !== result.draggableId) {
             const { data } = await AxiosHandler.post('/api/file', {
@@ -40,14 +45,7 @@ export const WithSidebar = ({ children }: { children: React.ReactNode }) => {
                         </div>
                     )}
                 </Droppable>
-                <Droppable droppableId="resume">
-                    {(provided) => (
-                        <div ref={provided.innerRef} {...provided.droppableProps}>
-                            {children}
-                            {provided.placeholder}
-                        </div>
-                    )}
-                </Droppable>
+                {children}
             </Flex>
         </DragDropContext>
     );

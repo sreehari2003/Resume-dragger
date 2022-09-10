@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { Button, Center, Flex, Heading } from '@chakra-ui/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Droppable } from 'react-beautiful-dnd';
 import { MainLoader } from '../../components/Loader';
 import { useResume, useProtected } from '../../hooks';
 import { File } from '../../components/cards';
@@ -15,7 +16,6 @@ const Index = () => {
     const navigate = useNavigate();
     // fetching the token from query
     const [searchParams] = useSearchParams();
-
     // setting the token to localStorage
     useEffect(() => {
         if (searchParams.get('id')) {
@@ -40,11 +40,23 @@ const Index = () => {
             <>
                 <Topbar />
                 <WithSidebar>
-                    <Flex p="8" flexWrap="wrap" position="absolute" left="200">
-                        {data?.record.map((el, index) => (
-                            <File name={el.name} resume={el.resume} id={index} key={index} />
-                        ))}
-                    </Flex>
+                    <Droppable droppableId="resume">
+                        {(provided) => (
+                            <div ref={provided.innerRef} {...provided.droppableProps}>
+                                <Flex p="8" flexWrap="wrap" position="absolute" left="200">
+                                    {data?.record.map((el, index) => (
+                                        <File
+                                            name={el.name}
+                                            resume={el.resume}
+                                            id={index}
+                                            key={index}
+                                        />
+                                    ))}
+                                    {provided.placeholder}
+                                </Flex>
+                            </div>
+                        )}
+                    </Droppable>
                 </WithSidebar>
             </>
         );

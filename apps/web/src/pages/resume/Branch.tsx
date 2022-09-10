@@ -1,5 +1,7 @@
+/* eslint-disable react/no-array-index-key */
 import React from 'react';
 import { Button, Flex, Heading } from '@chakra-ui/react';
+import { Droppable } from 'react-beautiful-dnd';
 import { useParams } from 'react-router-dom';
 import { MainLoader } from '../../components/Loader';
 import { useProtected, useFetch } from '../../hooks';
@@ -14,7 +16,6 @@ interface Data {
 const Branch = () => {
     useProtected();
     const params = useParams();
-    // fetching the resumes from provided api
 
     const { data: vars, isLoading, mutate } = useFetch<Data[]>(`/api/folder/${params.id}`);
 
@@ -28,16 +29,31 @@ const Branch = () => {
             </>
         );
     }
+
     if (vars) {
         return (
             <>
                 <Topbar />
                 <WithSidebar>
-                    <Flex p="8" flexWrap="wrap" position="absolute" left="200">
-                        {vars.data.map((el, index) => (
-                            // eslint-disable-next-line react/no-array-index-key
-                            <File name={el.name} resume={el.name} id={index} key={index} />
-                        ))}
+                    <Flex minH="80vh" p="8" w="85%" flexWrap="wrap" position="absolute" left="200">
+                        <Droppable droppableId="branch">
+                            {(provided) => (
+                                <div ref={provided.innerRef} {...provided.droppableProps}>
+                                    <Flex>
+                                        {vars.data.map((el, index) => (
+                                            // eslint-disable-next-line react/no-array-index-key
+                                            <File
+                                                name={el.name}
+                                                resume={el.name}
+                                                id={index}
+                                                key={index}
+                                            />
+                                        ))}
+                                    </Flex>
+                                    {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
                     </Flex>
                 </WithSidebar>
             </>
