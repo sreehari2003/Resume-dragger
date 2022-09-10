@@ -1,3 +1,4 @@
 .husky
 package.json
 yarn.lock
+dist
