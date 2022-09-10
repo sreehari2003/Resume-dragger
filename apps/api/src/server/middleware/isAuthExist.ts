@@ -19,7 +19,6 @@ export const isAuth = catchAsync(async (req: Request, _res: Response, next: Next
     } else {
         return next(new AppError('user not logged in ', 401));
     }
-    console.log(token);
 
     // 2)verify the token !
 
