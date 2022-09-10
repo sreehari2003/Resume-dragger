@@ -1,8 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useEffect } from 'react';
 import { Button, Center, Flex, Heading } from '@chakra-ui/react';
-import { useSearchParams } from 'react-router-dom';
-import { AxiosHandler } from '../../api/index';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MainLoader } from '../../components/Loader';
 import { useResume, useProtected } from '../../hooks';
 import { File } from '../../components/cards';
@@ -10,31 +9,21 @@ import { WithSidebar, Topbar } from '../../layout';
 
 const Index = () => {
     useProtected();
+
     // fetching the resumes from provided api
     const { data, isLoading, mutate } = useResume();
+    const navigate = useNavigate();
     // fetching the token from query
     const [searchParams] = useSearchParams();
-    useEffect(() => {
-        (async () => {
-            AxiosHandler.get(`/user}`);
-        })();
-    }, []);
 
     // setting the token to localStorage
     useEffect(() => {
         if (searchParams.get('id')) {
+            // verifyToken();
             localStorage.setItem('token', searchParams.get('id')!);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchParams]);
-
-    // this will remove the problem with token exposure
-    useEffect(() => {
-        if (searchParams.get('id')) {
-            window.location.reload();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [searchParams, navigate]);
 
     if (isLoading) {
         return (
@@ -70,7 +59,6 @@ const Index = () => {
                     position="fixed"
                     alignItems="center"
                     justifyContent={{ sm: '', md: 'center' }}
-                    // left={{ sm: '100', base: '0' }}
                     left="100"
                     flexDirection="column"
                     w="full"
