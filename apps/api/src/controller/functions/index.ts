@@ -61,6 +61,25 @@ export const userControl = async (body: UserBody) => {
 
 export const moveFile = catchAsync(async (req: Request, res: Response) => {
     const { file, name } = req.body;
+
+    const exits = await prisma.folder.findUnique({
+        where: {
+            name: file,
+        },
+        select: {
+            File: true,
+        },
+    });
+    if (exits) {
+        const isExists = exits?.File.find((el) => el.name === name);
+        if (isExists) {
+            return res.status(200).json({
+                ok: false,
+                message: 'file already exist',
+            });
+        }
+    }
+
     const newFile = await prisma.folder.update({
         where: {
             name: file,
@@ -134,5 +153,22 @@ export const getFile = catchAsync(async (req: Request, res: Response, next: Next
         ok: true,
         data: files?.File,
         message: 'Query was completed',
+    });
+});
+
+export const deletAccount = catchAsync(async (req: Request, res: Response) => {
+    const user = req.user as MongoUser;
+    await prisma.user.delete({
+        where: {
+            id: user.id,
+        },
+        select: {
+            folder: true,
+        },
+    });
+
+    return res.status(200).json({
+        ok: true,
+        message: 'Account was deleted',
     });
 });

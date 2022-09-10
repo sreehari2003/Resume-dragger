@@ -21,7 +21,7 @@ export const WithSidebar = ({ children }: { children: React.ReactNode }) => {
                 });
             } else {
                 toast({
-                    title: 'couldnt move file',
+                    title: data.message,
                     status: 'error',
                     duration: 9000,
                     isClosable: true,
