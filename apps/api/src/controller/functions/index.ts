@@ -196,14 +196,15 @@ export const swapFile = catchAsync(async (req: Request, res: Response, next: Nex
     const temp = array[req.body.initialIndex];
     array[req.body.initialIndex] = array[req.body.finalIndex];
     array[req.body.finalIndex] = temp;
-
-    const dara = await prisma.file.updateMany({
+    const dara = await prisma.folder.update({
         where: {
-            folderId: {
-                contains: folders.id,
+            name: req.body.folder,
+        },
+        data: {
+            File: {
+                set: array,
             },
         },
-        data: array,
     });
 
     return res.status(200).json({ ok: true, data: dara, message: 'sort succesfull' });
