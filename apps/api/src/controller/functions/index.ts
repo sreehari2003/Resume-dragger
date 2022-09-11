@@ -172,3 +172,39 @@ export const deletAccount = catchAsync(async (req: Request, res: Response) => {
         message: 'Account was deleted',
     });
 });
+
+export const swapFile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    // const user = req.user as MongoUser;
+    const folders = await prisma.folder.findUnique({
+        where: {
+            name: req.body.folder,
+        },
+    });
+
+    if (!folders) {
+        return next(new AppError('couldnt find the folder', 400));
+    }
+
+    const array = await prisma.file.findMany({
+        where: {
+            folderId: folders.id,
+        },
+    });
+    if (!array) {
+        return next(new AppError('couldnt find the folder', 400));
+    }
+    const temp = array[req.body.initialIndex];
+    array[req.body.initialIndex] = array[req.body.finalIndex];
+    array[req.body.finalIndex] = temp;
+
+    const dara = await prisma.file.updateMany({
+        where: {
+            folderId: {
+                contains: folders.id,
+            },
+        },
+        data: array,
+    });
+
+    return res.status(200).json({ ok: true, data: dara, message: 'sort succesfull' });
+});

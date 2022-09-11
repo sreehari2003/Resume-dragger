@@ -7,6 +7,7 @@ import {
     findUser,
     getFile,
     deletAccount,
+    swapFile,
 } from '../controller/functions';
 import { isAuth } from '../server/middleware/isAuthExist';
 
@@ -17,5 +18,6 @@ router.route('/folder/:id').get(isAuth, getFile);
 router.route('/file').post(isAuth, moveFile);
 router.route('/user').get(isAuth, findUser);
 router.route('/delete').get(isAuth, deletAccount);
+router.route('/swap').post(isAuth, swapFile);
 
 export default router;
