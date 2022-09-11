@@ -35,11 +35,17 @@ const Branch = () => {
             <>
                 <Topbar />
                 <WithSidebar>
-                    <Flex  p="8"  width={{ md: '80%' }} flexWrap="wrap" position="absolute" left="200">
-                       <Droppable droppableId="branch">
+                    <Flex
+                        p="8"
+                        width={{ md: '80%' }}
+                        flexWrap="wrap"
+                        position="absolute"
+                        left="200"
+                    >
+                        <Droppable droppableId="branch">
                             {(provided) => (
                                 <div ref={provided.innerRef} {...provided.droppableProps}>
-                                    <Flex flexDirection={{ sm: 'column', md: 'row' }}>
+                                    <Flex flexDirection={{ base: 'column', md: 'row' }}>
                                         {vars.data.map((el, index) => (
                                             // eslint-disable-next-line react/no-array-index-key
                                             <File
