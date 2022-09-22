@@ -8,5 +8,6 @@ declare namespace NodeJS {
         NODE_ENV: string;
         CLIENT_URL: string;
         API_URL: string;
+        TOKEN: string;
     }
 }
