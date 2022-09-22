@@ -34,7 +34,7 @@ export const Topbar = ({ scrollToLogin }: Scroll) => {
     }, [y]);
 
     return (
-        <Box display="flex" justifyContent="space-between" h={65} alignItems="center" p="6">
+        <Box display="flex" justifyContent="space-between" h={65} alignItems="center" p="6" position="relative">
             <Flex
                 flexDirection="column"
                 position={y > 80 ? 'fixed' : 'relative'}
@@ -62,8 +62,9 @@ export const Topbar = ({ scrollToLogin }: Scroll) => {
             )}
             {location.pathname !== '/' && (
                 <Button
-                    colorScheme="red
-        "
+                  position="fixed"
+                    colorScheme="red"
+                    left="1400"            
                     bg="red"
                     color="white"
                     onClick={logOut}

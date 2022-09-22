@@ -1,4 +1,5 @@
 /* eslint-disable no-underscore-dangle */
+import axios from 'axios';
 import { NextFunction, Request, Response } from 'express';
 import { UserBody } from 'src/routes/types';
 import { catchAsync } from '../../utils';
@@ -8,6 +9,10 @@ import { prisma } from '../../server/index';
 
 interface MongoUser {
     id: string;
+}
+interface US {
+    name: string;
+    resume: string;
 }
 
 export const newFolder = catchAsync(async (req: Request, res: Response) => {
@@ -45,17 +50,37 @@ export const userControl = async (body: UserBody) => {
         where: {
             email: body.email,
         },
+        select: {
+            id: true,
+            resume: true,
+        },
     });
     if (checkUser) {
         return checkUser;
     }
+    const URL = 'https://api.jsonbin.io/v3/b/603e095481087a6a8b944bd4';
+    const accessKyy = process.env.TOKEN!;
+    const { data } = await axios.get(URL, {
+        headers: {
+            'X-Master-Key': accessKyy.replaceAll('@', '$'),
+        },
+    });
+
+    const obj: US[] = [];
+    data.record.map((el) => obj.push({ name: el.name, resume: el.resume }));
+
     const response = await prisma.user.create({
         data: {
             name: body.name,
             email: body.email,
             folder: {},
+            // adding the provided resumes to user db so we can manipulate it
+            resume: {
+                create: obj,
+            },
         },
     });
+
     return response;
 };
 
@@ -124,6 +149,7 @@ export const findUser = catchAsync(async (req: Request, res: Response, next: Nex
             email: true,
             id: true,
             folder: true,
+            resume: true,
         },
     });
     if (!result) {

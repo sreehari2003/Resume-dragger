@@ -17,15 +17,20 @@ export const File = ({ name, resume, id }: FileRes) => (
                 <Box>
                     <a href={resume} target="_blank" rel="noreferrer">
                         <Box
+                            p="3"
                             bg="black"
-                            height={{ base: '110px', md: '120px' }}
-                            width={{ base: '110px', md: '120px' }}
+                            height={{ base: '110px', md: '70px' }}
+                            width={{ base: '110px', md: '250px' }}
                             margin="5px"
                             borderRadius="10px"
                             _hover={{ cursor: 'grabbing', backgroundColor: 'gray' }}
                         >
-                            <Flex flexDirection="column" align="center">
-                                <AiFillFilePdf color="red" fontSize="80px" />
+                            <Flex
+                                flexDirection="row-reverse"
+                                align="center"
+                                justifyContent="space-between"
+                            >
+                                <AiFillFilePdf color="red" fontSize="40px" />
                                 <Heading color="white" as="h6" fontSize="20px" textAlign="center">
                                     {name}
                                 </Heading>

@@ -1,18 +1,28 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useEffect } from 'react';
-import { Button, Center, Flex, Heading } from '@chakra-ui/react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Droppable } from 'react-beautiful-dnd';
+import { Button, Flex, Text, useDisclosure, useToast } from '@chakra-ui/react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import { MainLoader } from '../../components/Loader';
-import { useResume, useProtected } from '../../hooks';
-import { File } from '../../components/cards';
-import { WithSidebar, Topbar } from '../../layout';
+import { useProtected, useAuth } from '../../hooks';
+import { File, NewFolder } from '../../components/cards';
+import { Board } from '../../components/Board';
+import { Topbar } from '../../layout';
+import { Boards } from '../../views/boards';
+
+interface Data {
+    name: string;
+    resume: string;
+    id: string;
+}
 
 const Index = () => {
     useProtected();
+    const { user, isUserLoading } = useAuth();
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
-    // fetching the resumes from provided api
-    const { data, isLoading, mutate } = useResume();
+    console.log(user);
+
     const navigate = useNavigate();
     // fetching the token from query
     const [searchParams] = useSearchParams();
@@ -25,65 +35,98 @@ const Index = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchParams, navigate]);
 
-    if (isLoading) {
+    const toast = useToast();
+    const params = useParams();
+
+    const onDrag = async (result: DropResult) => {
+        console.log(result);
+        // if (result.source.droppableId === result.destination?.droppableId) {
+        //     const swap = {
+        //         folder: params.id,
+        //         finalIndex: result.destination.index,
+        //         initialIndex: result.source.index,
+        //     };
+        //     try {
+        //         await AxiosHandler.post('/api/swap', swap);
+        //         mutate(`/api/folder/${params.id}`, true);
+        //     } catch {
+        //         toast({
+        //             title: 'couldnt swap the file',
+        //             status: 'error',
+        //             duration: 9000,
+        //             isClosable: true,
+        //         });
+        //     }
+        // }
+        // if (result.destination?.droppableId !== result.draggableId) {
+        //     const { data } = await AxiosHandler.post('/api/file', {
+        //         file: result.destination?.droppableId,
+        //         name: result.draggableId,
+        //     });
+        //     if (data.ok) {
+        //         toast({
+        //             title: 'File was moved',
+        //             status: 'success',
+        //             duration: 9000,
+        //             isClosable: true,
+        //         });
+        //     } else {
+        //         toast({
+        //             title: data.message,
+        //             status: 'error',
+        //             duration: 9000,
+        //             isClosable: true,
+        //         });
+        //     }
+        // }
+    };
+    // const load = true;
+    if (isUserLoading) {
         return (
             <>
                 <Topbar />
-                <WithSidebar>
-                    <MainLoader />
-                </WithSidebar>
+                <MainLoader />
             </>
         );
     }
-    if (data) {
-        return (
-            <>
+
+    return (
+        <>
+            <DragDropContext onDragEnd={onDrag}>
                 <Topbar />
-                <WithSidebar>
-                    <Droppable droppableId="resume">
-                        {(provided) => (
-                            <div ref={provided.innerRef} {...provided.droppableProps}>
-                                <Flex p="8" flexWrap="wrap" position="absolute" left="200">
-                                    {data?.record.map((el, index) => (
+                <NewFolder isOpen={isOpen} onClose={onClose} />
+                <Droppable droppableId="canvas">
+                    {(provided) => (
+                        <div ref={provided.innerRef} {...provided.droppableProps}>
+                            <Flex p="8">
+                                <Board name="Resumes" draggable={false}>
+                                    {user?.data.resume.map((el: Data) => (
                                         <File
                                             name={el.name}
                                             resume={el.resume}
-                                            id={index}
-                                            key={index}
+                                            id={Number(el.id)}
+                                            key={el.id}
                                         />
                                     ))}
-                                    {provided.placeholder}
-                                </Flex>
-                            </div>
-                        )}
-                    </Droppable>
-                </WithSidebar>
-            </>
-        );
-    }
-    return (
-        <>
-            <Topbar />
-            <WithSidebar>
-                <Center
-                    p="8"
-                    flexWrap="wrap"
+                                </Board>
+                                <Boards />
+                                {provided.placeholder}
+                            </Flex>
+                        </div>
+                    )}
+                </Droppable>
+                <Button
+                    alignSelf="end"
                     position="fixed"
-                    alignItems="center"
-                    justifyContent={{ sm: '', md: 'center' }}
-                    left="100"
-                    flexDirection="column"
-                    w="full"
-                    mt="90px"
+                    left="1300"
+                    bottom="100"
+                    bg="red"
+                    px="8"
+                    onClick={onOpen}
                 >
-                    <Heading as="h4" fontSize="100px" color="red">
-                        404
-                    </Heading>
-                    <Button onClick={() => mutate()} mt="40px">
-                        Reload
-                    </Button>
-                </Center>
-            </WithSidebar>
+                    New Board
+                </Button>
+            </DragDropContext>
         </>
     );
 };
