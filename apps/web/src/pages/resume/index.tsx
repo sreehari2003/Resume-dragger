@@ -1,8 +1,7 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Flex, useDisclosure, useToast } from '@chakra-ui/react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useSWRConfig } from 'swr';
+import { useSearchParams } from 'react-router-dom';
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import { MainLoader } from '../../components/Loader';
 import { useProtected, useFetch } from '../../hooks';
@@ -20,27 +19,26 @@ interface Data {
 
 const Index = () => {
     useProtected();
-    const { mutate: reload } = useSWRConfig();
 
     const { isLoading, data: resume, mutate } = useFetch<Data[]>('/api/resumes');
 
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const [render, setRender] = useState<boolean>(false);
 
-    const navigate = useNavigate();
     // fetching the token from query
     const [searchParams] = useSearchParams();
     // setting the token to localStorage
     useEffect(() => {
         if (searchParams.get('id')) {
-            // verifyToken();
             localStorage.setItem('token', searchParams.get('id')!);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchParams, navigate]);
+    }, [searchParams]);
 
     const toast = useToast();
 
     const onDrag = async (result: DropResult) => {
+        console.log(result);
         if (
             result.source.droppableId === 'Resumes' &&
             result.destination?.droppableId !== 'canvas'
@@ -62,7 +60,6 @@ const Index = () => {
                     });
                 }
                 mutate();
-                reload('/api/user', true);
             } catch {
                 toast({
                     title: 'couldnt move the file',
@@ -73,57 +70,56 @@ const Index = () => {
             }
         }
 
-        // if (result.destination?.droppableId !== result.draggableId) {
-        //     const { data } = await AxiosHandler.post('/api/file', {
-        //         file: result.destination?.droppableId,
-        //         name: result.draggableId,
-        //     });
-        //     if (data.ok) {
-        //         toast({
-        //             title: 'File was moved',
-        //             status: 'success',
-        //             duration: 9000,
-        //             isClosable: true,
-        //         });
-        //     } else {
-        //         toast({
-        //             title: data.message,
-        //             status: 'error',
-        //             duration: 9000,
-        //             isClosable: true,
-        //         });
-        //     }
-        // }
+        if (result.destination?.droppableId === 'Resumes') {
+            const Info = {
+                resumename: result.draggableId,
+                folder: result.source.droppableId,
+            };
+            try {
+                const { data } = await AxiosHandler.post('/api/backToResume', Info);
+                if (!data.ok) throw new Error();
+                if (data.ok) {
+                    toast({
+                        title: 'moved successfully',
+                        status: 'success',
+                        duration: 9000,
+                        isClosable: true,
+                    });
+                }
+                mutate();
+            } catch {
+                toast({
+                    title: 'couldnt move the file',
+                    status: 'error',
+                    duration: 9000,
+                    isClosable: true,
+                });
+            }
+        }
     };
-    // const load = true;
-    if (isLoading) {
-        return (
-            <>
-                <Topbar />
-                <MainLoader />
-            </>
-        );
-    }
 
     return (
         <DragDropContext onDragEnd={onDrag}>
             <Topbar />
-            <NewFolder isOpen={isOpen} onClose={onClose} />
+            <NewFolder isOpen={isOpen} onClose={onClose} setRender={setRender} render={render} />
             <Droppable droppableId="canvas">
                 {(provided) => (
                     <div ref={provided.innerRef} {...provided.droppableProps}>
                         <Flex p="8">
-                            <Board name="Resumes" draggable={false} index={-1}>
-                                {resume?.data.map((el: Data, index: any) => (
-                                    <File
-                                        name={el.name}
-                                        resume={el.resume}
-                                        id={index}
-                                        key={el.id}
-                                    />
-                                ))}
-                            </Board>
-                            <Boards />
+                            {isLoading && <MainLoader />}
+                            {!isLoading && (
+                                <Board name="Resumes" draggable={false} index={-1}>
+                                    {resume?.data.map((el: Data, index: any) => (
+                                        <File
+                                            name={el.name}
+                                            resume={el.resume}
+                                            id={index}
+                                            key={el.id}
+                                        />
+                                    ))}
+                                </Board>
+                            )}
+                            <Boards onDrag={onDrag} render={render} />
                             {provided.placeholder}
                         </Flex>
                     </div>
@@ -132,7 +128,7 @@ const Index = () => {
             <Button
                 alignSelf="end"
                 position="fixed"
-                left={{ sm: '1300', '2xl': '1700' }}
+                left={{ sm: '1300' }}
                 bottom="100"
                 bg="red"
                 px="8"

@@ -1,5 +1,5 @@
 import useSWR, { KeyedMutator } from 'swr';
-import { AxiosHandler } from '../api';
+import { ApiHandler } from '../api';
 
 export interface Info<T = any> {
     ok: boolean;
@@ -21,6 +21,7 @@ interface ReturnVal<T = any> {
 export const useFetch = <T>(url: string): ReturnVal<T> => {
     const getData = async (uri: string) => {
         // here apiHandler refers to axios.create function
+        const AxiosHandler = ApiHandler(localStorage.getItem('token')!!);
         const { data } = await AxiosHandler.get(uri);
         return data;
     };
