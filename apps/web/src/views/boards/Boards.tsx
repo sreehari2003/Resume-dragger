@@ -1,33 +1,32 @@
 import { Box, Flex } from '@chakra-ui/react';
-import React from 'react'
+import React from 'react';
 import { Board } from '../../components/Board';
-import { useAuth } from '../../hooks'
-
-interface Data {
-    name: string;
-    resume: string;
-    id: string;
-}
+import { File } from '../../components/cards';
+import { MainLoader } from '../../components/Loader';
+import { Prop } from '../../context/AuthContext';
+import { useFetch } from '../../hooks';
 
 export const Boards = () => {
-    const {user,isUserLoading} = useAuth();
-    console.log(user);
-    if(isUserLoading){
-        return <h1>Loading..</h1>
+    const { isLoading, data: user } = useFetch<Prop>('/api/user');
+    if (isLoading) {
+        return (
+            <Flex mx="18" flexWrap="nowrap">
+                <MainLoader />
+            </Flex>
+        );
     }
-   
-    return  (
-        <>
-      <Flex   mx="12">
-      {user.data.folder.map((el:Data) =>(
-           <Box mx="12">
-             <Board name={el.name}>
-                {el.name}
-            </Board>
-           </Box>
-        ))}
-      </Flex>
-        </>
-    )
-}
 
+    return (
+        <Flex mx="18">
+            {user.data.folder.map((el, index: number) => (
+                <Box mx="12">
+                    <Board name={el.name} index={index}>
+                        {el.File.map((file, dex) => (
+                            <File name={file.name} id={dex} resume={file.name} />
+                        ))}
+                    </Board>
+                </Box>
+            ))}
+        </Flex>
+    );
+};

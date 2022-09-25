@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AxiosHandler } from '../api';
 import { Child } from '../types';
 
@@ -13,13 +13,19 @@ interface Data {
     resume: string;
     id: string;
 }
+interface File {
+    name: string;
+    id: string;
+}
+interface Folder {
+    name: string;
+    id: string;
+    File: File[];
+}
 
-interface Prop {
+export interface Prop {
     resume: Data[];
-    folder: {
-        name: string;
-        id: string;
-    };
+    folder: Folder[];
 }
 
 interface User {
@@ -34,8 +40,6 @@ const AuthContext = ({ children }: Child) => {
     const [user, setUser] = useState<User | null>(null);
     const [isUserLoading, setUserLoading] = useState(true);
     const token = localStorage.getItem('token');
-    const [searchParams] = useSearchParams();
-    console.log(user);
 
     const callForUserInfo = async () => {
         try {
@@ -44,8 +48,8 @@ const AuthContext = ({ children }: Child) => {
             if (!data || !data.ok) throw new Error();
             setUser(data);
         } catch (err) {
-            window.location.reload();
-            // navigate('/?fail=true');
+            // window.location.reload();
+            navigate('/?fail=true');
         } finally {
             setUserLoading(false);
         }
@@ -56,7 +60,8 @@ const AuthContext = ({ children }: Child) => {
         } else {
             navigate('/');
         }
-    }, [navigate, token, searchParams]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const value = useMemo(
         () => ({

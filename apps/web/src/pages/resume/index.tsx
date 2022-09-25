@@ -1,14 +1,16 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useEffect } from 'react';
-import { Button, Flex, Text, useDisclosure, useToast } from '@chakra-ui/react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Button, Flex, useDisclosure, useToast } from '@chakra-ui/react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSWRConfig } from 'swr';
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import { MainLoader } from '../../components/Loader';
-import { useProtected, useAuth } from '../../hooks';
+import { useProtected, useFetch } from '../../hooks';
 import { File, NewFolder } from '../../components/cards';
 import { Board } from '../../components/Board';
 import { Topbar } from '../../layout';
 import { Boards } from '../../views/boards';
+import { AxiosHandler } from '../../api';
 
 interface Data {
     name: string;
@@ -18,10 +20,11 @@ interface Data {
 
 const Index = () => {
     useProtected();
-    const { user, isUserLoading } = useAuth();
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    const { mutate: reload } = useSWRConfig();
 
-    console.log(user);
+    const { isLoading, data: resume, mutate } = useFetch<Data[]>('/api/resumes');
+
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const navigate = useNavigate();
     // fetching the token from query
@@ -36,28 +39,40 @@ const Index = () => {
     }, [searchParams, navigate]);
 
     const toast = useToast();
-    const params = useParams();
 
     const onDrag = async (result: DropResult) => {
-        console.log(result);
-        // if (result.source.droppableId === result.destination?.droppableId) {
-        //     const swap = {
-        //         folder: params.id,
-        //         finalIndex: result.destination.index,
-        //         initialIndex: result.source.index,
-        //     };
-        //     try {
-        //         await AxiosHandler.post('/api/swap', swap);
-        //         mutate(`/api/folder/${params.id}`, true);
-        //     } catch {
-        //         toast({
-        //             title: 'couldnt swap the file',
-        //             status: 'error',
-        //             duration: 9000,
-        //             isClosable: true,
-        //         });
-        //     }
-        // }
+        if (
+            result.source.droppableId === 'Resumes' &&
+            result.destination?.droppableId !== 'canvas'
+        ) {
+            const resumeDrag = {
+                folder: result.destination?.droppableId,
+                resume: result.draggableId,
+            };
+
+            try {
+                const { data } = await AxiosHandler.post('/api/swap', resumeDrag);
+                if (!data.ok) throw new Error();
+                if (data.ok) {
+                    toast({
+                        title: 'moved successfully',
+                        status: 'success',
+                        duration: 9000,
+                        isClosable: true,
+                    });
+                }
+                mutate();
+                reload('/api/user', true);
+            } catch {
+                toast({
+                    title: 'couldnt move the file',
+                    status: 'error',
+                    duration: 9000,
+                    isClosable: true,
+                });
+            }
+        }
+
         // if (result.destination?.droppableId !== result.draggableId) {
         //     const { data } = await AxiosHandler.post('/api/file', {
         //         file: result.destination?.droppableId,
@@ -81,7 +96,7 @@ const Index = () => {
         // }
     };
     // const load = true;
-    if (isUserLoading) {
+    if (isLoading) {
         return (
             <>
                 <Topbar />
@@ -91,43 +106,41 @@ const Index = () => {
     }
 
     return (
-        <>
-            <DragDropContext onDragEnd={onDrag}>
-                <Topbar />
-                <NewFolder isOpen={isOpen} onClose={onClose} />
-                <Droppable droppableId="canvas">
-                    {(provided) => (
-                        <div ref={provided.innerRef} {...provided.droppableProps}>
-                            <Flex p="8">
-                                <Board name="Resumes" draggable={false}>
-                                    {user?.data.resume.map((el: Data) => (
-                                        <File
-                                            name={el.name}
-                                            resume={el.resume}
-                                            id={Number(el.id)}
-                                            key={el.id}
-                                        />
-                                    ))}
-                                </Board>
-                                <Boards />
-                                {provided.placeholder}
-                            </Flex>
-                        </div>
-                    )}
-                </Droppable>
-                <Button
-                    alignSelf="end"
-                    position="fixed"
-                    left="1300"
-                    bottom="100"
-                    bg="red"
-                    px="8"
-                    onClick={onOpen}
-                >
-                    New Board
-                </Button>
-            </DragDropContext>
-        </>
+        <DragDropContext onDragEnd={onDrag}>
+            <Topbar />
+            <NewFolder isOpen={isOpen} onClose={onClose} />
+            <Droppable droppableId="canvas">
+                {(provided) => (
+                    <div ref={provided.innerRef} {...provided.droppableProps}>
+                        <Flex p="8">
+                            <Board name="Resumes" draggable={false} index={-1}>
+                                {resume?.data.map((el: Data, index: any) => (
+                                    <File
+                                        name={el.name}
+                                        resume={el.resume}
+                                        id={index}
+                                        key={el.id}
+                                    />
+                                ))}
+                            </Board>
+                            <Boards />
+                            {provided.placeholder}
+                        </Flex>
+                    </div>
+                )}
+            </Droppable>
+            <Button
+                alignSelf="end"
+                position="fixed"
+                left={{ sm: '1300', '2xl': '1700' }}
+                bottom="100"
+                bg="red"
+                px="8"
+                onClick={onOpen}
+            >
+                New Board
+            </Button>
+        </DragDropContext>
     );
 };
 

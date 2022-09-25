@@ -20,7 +20,7 @@ const App = () => {
             <AuthContext>
                 <Routes>
                     <Route path="/" element={<Pageone />} />
-                    <Route path="/resume" element={<Resume />} />            
+                    <Route path="/resume" element={<Resume />} />
                     <Route path="*" element={<Error />} />
                 </Routes>
             </AuthContext>
