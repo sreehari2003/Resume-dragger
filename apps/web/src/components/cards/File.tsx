@@ -20,7 +20,7 @@ export const File = ({ name, resume, id }: FileRes) => (
                             p="3"
                             bg="black"
                             height={{ base: '110px', md: '70px' }}
-                            width={{ base: '110px', md: '250px' }}
+                            width="250px"
                             margin="5px"
                             borderRadius="10px"
                             _hover={{ cursor: 'grabbing', backgroundColor: 'gray' }}

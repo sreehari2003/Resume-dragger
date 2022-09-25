@@ -1,6 +1,7 @@
 import { Box, Flex, Heading, Button } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { AxiosHandler } from '../api';
 
 interface Scroll {
     // eslint-disable-next-line react/require-default-props
@@ -23,6 +24,11 @@ export const Topbar = ({ scrollToLogin }: Scroll) => {
         setY(window.scrollY);
     }, []);
 
+    const deleteAccount = async () => {
+        await AxiosHandler.get('/api/delete');
+        window.location.reload();
+    };
+
     useEffect(() => {
         window.addEventListener('scroll', (e) => handleNavigation(e));
 
@@ -34,7 +40,14 @@ export const Topbar = ({ scrollToLogin }: Scroll) => {
     }, [y]);
 
     return (
-        <Box display="flex" justifyContent="space-between" h={65} alignItems="center" p="6" position="relative">
+        <Box
+            display="flex"
+            justifyContent="space-between"
+            h={65}
+            alignItems="center"
+            p="6"
+            position="relative"
+        >
             <Flex
                 flexDirection="column"
                 position={y > 80 ? 'fixed' : 'relative'}
@@ -61,16 +74,28 @@ export const Topbar = ({ scrollToLogin }: Scroll) => {
                 </Button>
             )}
             {location.pathname !== '/' && (
-                <Button
-                  position="fixed"
-                    colorScheme="red"
-                    left="1400"            
-                    bg="red"
-                    color="white"
-                    onClick={logOut}
-                >
-                    Logout
-                </Button>
+                <Flex>
+                    <Button
+                        position="fixed"
+                        colorScheme="red"
+                        left={{ '2xl': '1600' }}
+                        bg="red"
+                        color="white"
+                        onClick={deleteAccount}
+                    >
+                        Delete Account
+                    </Button>
+                    <Button
+                        position="fixed"
+                        colorScheme="red"
+                        left={{ '2xl': '1800' }}
+                        bg="red"
+                        color="white"
+                        onClick={logOut}
+                    >
+                        Logout
+                    </Button>
+                </Flex>
             )}
         </Box>
     );
