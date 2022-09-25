@@ -78,7 +78,7 @@ export const Topbar = ({ scrollToLogin }: Scroll) => {
                     <Button
                         position="fixed"
                         colorScheme="red"
-                        left={{ '2xl': '1600' }}
+                        left={{ sm: '1200' }}
                         bg="red"
                         color="white"
                         onClick={deleteAccount}
@@ -88,7 +88,7 @@ export const Topbar = ({ scrollToLogin }: Scroll) => {
                     <Button
                         position="fixed"
                         colorScheme="red"
-                        left={{ '2xl': '1800' }}
+                        left={{ sm: '1400' }}
                         bg="red"
                         color="white"
                         onClick={logOut}

@@ -1,37 +1,8 @@
+import axios from 'axios';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AxiosHandler } from '../api';
 import { Child } from '../types';
-
-interface Dt {
-    user: any;
-    isUserLoading: boolean;
-    callForUserInfo: () => void;
-}
-interface Data {
-    name: string;
-    resume: string;
-    id: string;
-}
-interface File {
-    name: string;
-    id: string;
-}
-interface Folder {
-    name: string;
-    id: string;
-    File: File[];
-}
-
-export interface Prop {
-    resume: Data[];
-    folder: Folder[];
-}
-
-interface User {
-    data: Prop;
-    ok: boolean;
-}
+import { Dt, User } from './type';
 
 export const AuthCtx = createContext({} as Dt);
 
@@ -44,12 +15,18 @@ const AuthContext = ({ children }: Child) => {
     const callForUserInfo = async () => {
         try {
             setUserLoading(true);
-            const { data } = await AxiosHandler.get('api/user');
-            if (!data || !data.ok) throw new Error();
+            const { data } = await axios.get('http://localhost:8080/api/user', {
+                withCredentials: true,
+                headers: {
+                    Accept: 'application/json',
+                    'Access-Control-Allow-Origin': 'http://localhost:8080',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (!data.ok) throw new Error();
             setUser(data);
         } catch (err) {
-            // window.location.reload();
-            navigate('/?fail=true');
+            navigate('/');
         } finally {
             setUserLoading(false);
         }
@@ -61,7 +38,7 @@ const AuthContext = ({ children }: Child) => {
             navigate('/');
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [token]);
 
     const value = useMemo(
         () => ({

@@ -1,13 +1,23 @@
 import { Box, Flex } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Board } from '../../components/Board';
 import { File } from '../../components/cards';
 import { MainLoader } from '../../components/Loader';
-import { Prop } from '../../context/AuthContext';
+import { Prop } from '../../context/type';
 import { useFetch } from '../../hooks';
 
-export const Boards = () => {
-    const { isLoading, data: user } = useFetch<Prop>('/api/user');
+interface Drag {
+    onDrag: (el: any) => Promise<void>;
+    render: boolean;
+}
+
+export const Boards = ({ onDrag, render }: Drag) => {
+    const { isLoading, data: user, mutate } = useFetch<Prop>('/api/user');
+
+    useEffect(() => {
+        mutate();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [onDrag, render]);
     if (isLoading) {
         return (
             <Flex mx="18" flexWrap="nowrap">

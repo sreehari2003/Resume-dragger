@@ -18,9 +18,11 @@ import { useAuth } from '../../hooks';
 interface PropThin {
     isOpen: boolean;
     onClose: () => void;
+    setRender: React.Dispatch<boolean>;
+    render: boolean;
 }
 
-export const NewFolder = ({ isOpen, onClose }: PropThin) => {
+export const NewFolder = ({ isOpen, onClose, setRender, render }: PropThin) => {
     const toast = useToast();
     const cancelRef = useRef(null);
     const nameRef = useRef<HTMLInputElement>(null);
@@ -38,6 +40,7 @@ export const NewFolder = ({ isOpen, onClose }: PropThin) => {
                 const { data } = await AxiosHandler.post('/api/folder', {
                     name: nameRef.current?.value,
                 });
+                setRender(!render);
                 if (data.ok) {
                     toast({
                         title: 'File created successfully',

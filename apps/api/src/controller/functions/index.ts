@@ -250,6 +250,48 @@ export const swapFile = catchAsync(async (req: Request, res: Response, next: Nex
     return res.status(200).json({ ok: true, data, message: 'sort succesfull' });
 });
 
+export const backToResume = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.user as MongoUser;
+    const { resumename, folder } = req.body;
+    if (!resumename || !folder) {
+        return next(new AppError('Couldnt complte request', 400));
+    }
+    const response = await prisma.user.update({
+        where: {
+            id,
+        },
+        data: {
+            folder: {
+                update: {
+                    where: {
+                        name: folder,
+                    },
+                    data: {
+                        File: {
+                            delete: {
+                                name: resumename,
+                            },
+                        },
+                    },
+                },
+            },
+            resume: {
+                create: {
+                    name: resumename,
+                    resume: resumename,
+                },
+            },
+        },
+    });
+    if (!response) {
+        return next(new AppError('Couldnt complte request', 400));
+    }
+    return res.status(200).json({
+        ok: true,
+        message: 'Request completed successfully',
+    });
+});
+
 export const getAllResumes = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.user as MongoUser;
     const allRes = await prisma.resume.findMany({
