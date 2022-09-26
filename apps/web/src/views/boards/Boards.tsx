@@ -12,13 +12,13 @@ interface Drag {
 }
 
 export const Boards = ({ onDrag, render }: Drag) => {
-    const { isLoading, data: user, mutate } = useFetch<Prop>('/api/user');
+    const { isLoading, data: user, mutate, error } = useFetch<Prop>('/api/user');
 
     useEffect(() => {
         mutate();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [onDrag, render]);
-    if (isLoading) {
+    if (isLoading || error) {
         return (
             <Flex mx="18" flexWrap="nowrap">
                 <MainLoader />

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import axios from 'axios';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +11,12 @@ const AuthContext = ({ children }: Child) => {
     const navigate = useNavigate();
     const [user, setUser] = useState<User | null>(null);
     const [isUserLoading, setUserLoading] = useState(true);
-    const token = localStorage.getItem('token');
+    const [localToken, setLocalToken] = useState<string | null>(null);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        setLocalToken(token);
+    }, [localStorage.getItem('token')]);
 
     const callForUserInfo = async () => {
         try {
@@ -20,7 +26,7 @@ const AuthContext = ({ children }: Child) => {
                 headers: {
                     Accept: 'application/json',
                     'Access-Control-Allow-Origin': 'http://localhost:8080',
-                    Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${localToken}`,
                 },
             });
             if (!data.ok) throw new Error();
@@ -32,13 +38,13 @@ const AuthContext = ({ children }: Child) => {
         }
     };
     useEffect(() => {
-        if (token) {
+        if (localToken) {
             callForUserInfo();
         } else {
             navigate('/');
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [token]);
+    }, [localToken]);
 
     const value = useMemo(
         () => ({
