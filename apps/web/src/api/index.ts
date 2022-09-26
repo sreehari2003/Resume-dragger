@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// const baseURL = 'https://resume-dragger-production.up.railway.app';
-const baseURL = undefined;
+const baseURL = 'https://resume-dragger-production.up.railway.app';
+// const baseURL = undefined;
 
 export const AxiosHandler = axios.create({
     baseURL: baseURL || 'http://localhost:8080',

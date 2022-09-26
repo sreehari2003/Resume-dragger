@@ -308,3 +308,54 @@ export const getAllResumes = catchAsync(async (req: Request, res: Response) => {
         data: allRes,
     });
 });
+
+export const Filetofile = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.user as MongoUser;
+    const { init, final, file } = req.body;
+    await prisma.user.update({
+        where: {
+            id,
+        },
+        data: {
+            folder: {
+                update: {
+                    where: {
+                        name: init,
+                    },
+                    data: {
+                        File: {
+                            delete: {
+                                name: file,
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
+    await prisma.user.update({
+        where: {
+            id,
+        },
+        data: {
+            folder: {
+                update: {
+                    where: {
+                        name: final,
+                    },
+                    data: {
+                        File: {
+                            create: {
+                                name: file,
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
+    return res.status(200).json({
+        ok: true,
+        message: 'Request completed successfully',
+    });
+});

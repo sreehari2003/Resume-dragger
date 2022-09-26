@@ -18,14 +18,16 @@ const AuthContext = ({ children }: Child) => {
         setLocalToken(token);
     }, [localStorage.getItem('token')]);
 
+    const API = 'https://resume-dragger-production.up.railway.app';
+    // const API = undefined;
     const callForUserInfo = async () => {
         try {
             setUserLoading(true);
-            const { data } = await axios.get('http://localhost:8080/api/user', {
+            const { data } = await axios.get(API || 'http://localhost:8080/api/user', {
                 withCredentials: true,
                 headers: {
                     Accept: 'application/json',
-                    'Access-Control-Allow-Origin': 'http://localhost:8080',
+                    'Access-Control-Allow-Origin': API || 'http://localhost:8080',
                     Authorization: `Bearer ${localToken}`,
                 },
             });

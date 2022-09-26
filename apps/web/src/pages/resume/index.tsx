@@ -40,7 +40,6 @@ const Index = () => {
     const AxiosHandler = ApiHandler(localStorage.getItem('token')!!);
 
     const onDrag = async (result: DropResult) => {
-        console.log(result);
         if (
             result.source.droppableId === 'Resumes' &&
             result.destination?.droppableId !== 'canvas'
@@ -53,14 +52,6 @@ const Index = () => {
             try {
                 const { data } = await AxiosHandler.post('/api/swap', resumeDrag);
                 if (!data.ok) throw new Error();
-                if (data.ok) {
-                    toast({
-                        title: 'moved successfully',
-                        status: 'success',
-                        duration: 9000,
-                        isClosable: true,
-                    });
-                }
                 mutate();
             } catch {
                 toast({
@@ -80,14 +71,32 @@ const Index = () => {
             try {
                 const { data } = await AxiosHandler.post('/api/backToResume', Info);
                 if (!data.ok) throw new Error();
-                if (data.ok) {
-                    toast({
-                        title: 'moved successfully',
-                        status: 'success',
-                        duration: 9000,
-                        isClosable: true,
-                    });
-                }
+                mutate();
+            } catch {
+                toast({
+                    title: 'couldnt move the file',
+                    status: 'error',
+                    duration: 9000,
+                    isClosable: true,
+                });
+            }
+        }
+        // one board to anothe
+        if (
+            result.source.droppableId &&
+            result.destination?.droppableId !== ('Resumes' || 'canvas')
+        ) {
+            const Data = {
+                init: result.source.droppableId,
+                final: result.destination?.droppableId,
+                file: result.draggableId,
+            };
+
+            try {
+                const { data } = await AxiosHandler.post('/api/filetofile', Data);
+                setRender((el) => !el);
+                if (!data.ok) throw new Error();
+
                 mutate();
             } catch {
                 toast({

@@ -18,8 +18,8 @@ const Index = () => {
     const LoginRef = useRef<HTMLDivElement>(null);
     const scrollToLogin = () => LoginRef.current?.scrollIntoView();
     const Login = () => {
-        window.open('http://localhost:8080/auth/google/', '_self');
-        // window.open('https://resume-dragger-production.up.railway.app/auth/google', '_self');
+        // window.open('http://localhost:8080/auth/google/', '_self');
+        window.open('https://resume-dragger-production.up.railway.app/auth/google', '_self');
     };
 
     useEffect(() => {

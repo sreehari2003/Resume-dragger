@@ -10,6 +10,7 @@ import {
     swapFile,
     backToResume,
     getAllResumes,
+    Filetofile,
 } from '../controller/functions';
 import { isAuth } from '../server/middleware/isAuthExist';
 
@@ -21,6 +22,7 @@ router.route('/file').post(isAuth, moveFile);
 router.route('/user').get(isAuth, findUser);
 router.route('/delete').get(isAuth, deletAccount);
 router.route('/swap').post(isAuth, swapFile);
+router.route('/filetofile').post(isAuth, Filetofile);
 router.route('/backToResume').post(isAuth, backToResume);
 router.route('/resumes').get(isAuth, getAllResumes);
 
