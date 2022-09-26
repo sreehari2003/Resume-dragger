@@ -9,7 +9,7 @@ import { File, NewFolder } from '../../components/cards';
 import { Board } from '../../components/Board';
 import { Topbar } from '../../layout';
 import { Boards } from '../../views/boards';
-import { AxiosHandler } from '../../api';
+import { ApiHandler } from '../../api';
 
 interface Data {
     name: string;
@@ -20,7 +20,7 @@ interface Data {
 const Index = () => {
     useProtected();
 
-    const { isLoading, data: resume, mutate } = useFetch<Data[]>('/api/resumes');
+    const { isLoading, data: resume, mutate, error } = useFetch<Data[]>('/api/resumes');
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [render, setRender] = useState<boolean>(false);
@@ -36,6 +36,8 @@ const Index = () => {
     }, [searchParams]);
 
     const toast = useToast();
+    // creating instance coz jwt getting malformed
+    const AxiosHandler = ApiHandler(localStorage.getItem('token')!!);
 
     const onDrag = async (result: DropResult) => {
         console.log(result);
@@ -105,9 +107,10 @@ const Index = () => {
             <Droppable droppableId="canvas">
                 {(provided) => (
                     <div ref={provided.innerRef} {...provided.droppableProps}>
-                        <Flex p="8">
-                            {isLoading && <MainLoader />}
-                            {!isLoading && (
+                        <Flex m="8">
+                            {/* first loading is failing so */}
+                            {(isLoading || error) && <MainLoader />}
+                            {!isLoading && !error && (
                                 <Board name="Resumes" draggable={false} index={-1}>
                                     {resume?.data.map((el: Data, index: any) => (
                                         <File
