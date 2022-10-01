@@ -10,28 +10,31 @@ interface FileRes extends Res {
     id: number;
 }
 
-export const File = ({ name, resume, id }: FileRes) => (
+export const File = ({ name, id }: FileRes) => (
     <Draggable draggableId={name} index={id}>
         {(provided) => (
             <div {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
                 <Box>
-                    <a href={resume} target="_blank" rel="noreferrer">
-                        <Box
-                            bg="black"
-                            height={{ base: '110px', md: '120px' }}
-                            width={{ base: '110px', md: '120px' }}
-                            margin="5px"
-                            borderRadius="10px"
-                            _hover={{ cursor: 'grabbing', backgroundColor: 'gray' }}
+                    <Box
+                        p="3"
+                        bg="black"
+                        height={{ base: '110px', md: '70px' }}
+                        width="250px"
+                        margin="5px"
+                        borderRadius="10px"
+                        _hover={{ cursor: 'grabbing', backgroundColor: 'gray' }}
+                    >
+                        <Flex
+                            flexDirection="row-reverse"
+                            align="center"
+                            justifyContent="space-between"
                         >
-                            <Flex flexDirection="column" align="center">
-                                <AiFillFilePdf color="red" fontSize="80px" />
-                                <Heading color="white" as="h6" fontSize="20px" textAlign="center">
-                                    {name}
-                                </Heading>
-                            </Flex>
-                        </Box>
-                    </a>
+                            <AiFillFilePdf color="red" fontSize="40px" />
+                            <Heading color="white" as="h6" fontSize="20px" textAlign="center">
+                                {name}
+                            </Heading>
+                        </Flex>
+                    </Box>
                 </Box>
             </div>
         )}

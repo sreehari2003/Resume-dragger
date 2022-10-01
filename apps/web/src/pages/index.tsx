@@ -14,7 +14,7 @@ const Index = () => {
             navigate('/resume');
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [token]);
+    }, []);
     const LoginRef = useRef<HTMLDivElement>(null);
     const scrollToLogin = () => LoginRef.current?.scrollIntoView();
     const Login = () => {

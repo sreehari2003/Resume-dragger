@@ -1,42 +1,61 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import axios from 'axios';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { AxiosHandler } from '../api';
+import { useNavigate } from 'react-router-dom';
 import { Child } from '../types';
-
-interface Dt {
-    user: any;
-}
+import { Dt, User } from './type';
 
 export const AuthCtx = createContext({} as Dt);
 
 const AuthContext = ({ children }: Child) => {
     const navigate = useNavigate();
-    const [user, setUser] = useState<any>(null);
-    const token = localStorage.getItem('token');
-    const [searchParams] = useSearchParams();
+    const [user, setUser] = useState<User | null>(null);
+    const [isUserLoading, setUserLoading] = useState(true);
+    const [localToken, setLocalToken] = useState<string | null>(null);
+
     useEffect(() => {
-        if (token) {
-            (async () => {
-                try {
-                    const { data } = await AxiosHandler.get('api/user');
-                    if (!data || !data.ok) throw new Error();
-                    setUser(data);
-                } catch (err) {
-                    window.location.reload();
-                    // navigate('/?fail=true');
-                }
-            })();
+        const token = localStorage.getItem('token');
+        setLocalToken(token);
+    }, [localStorage.getItem('token')]);
+
+    const API = 'https://resume-dragger-production.up.railway.app';
+    // const API = undefined;
+    const callForUserInfo = async () => {
+        try {
+            setUserLoading(true);
+            const { data } = await axios.get(API || 'http://localhost:8080/api/user', {
+                withCredentials: true,
+                headers: {
+                    Accept: 'application/json',
+                    'Access-Control-Allow-Origin': API || 'http://localhost:8080',
+                    Authorization: `Bearer ${localToken}`,
+                },
+            });
+            if (!data.ok) throw new Error();
+            setUser(data);
+        } catch (err) {
+            navigate('/');
+        } finally {
+            setUserLoading(false);
+        }
+    };
+    useEffect(() => {
+        if (localToken) {
+            callForUserInfo();
         } else {
             navigate('/');
         }
-    }, [navigate, token, searchParams]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [localToken]);
 
     const value = useMemo(
         () => ({
             user,
+            isUserLoading,
+            callForUserInfo,
         }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [user]
+        [user, isUserLoading]
     );
 
     return <AuthCtx.Provider value={value}>{children}</AuthCtx.Provider>;

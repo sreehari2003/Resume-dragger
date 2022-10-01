@@ -2,6 +2,7 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
+
 import { UserSession } from './types';
 import { userControl } from '../controller/functions';
 
@@ -24,6 +25,7 @@ router.get(
             picture: sess.photos[0].value,
         };
         const newUser = await userControl(user);
+
         const token = jwt.sign(
             {
                 data: newUser.id,

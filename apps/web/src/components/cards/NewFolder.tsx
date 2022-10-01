@@ -13,18 +13,21 @@ import {
 
 import React, { useRef, useState } from 'react';
 import { AxiosHandler } from '../../api';
-import { Info } from '../../hooks/useFetch';
+import { useAuth } from '../../hooks';
 
 interface PropThin {
     isOpen: boolean;
     onClose: () => void;
-    rerenderFolder: (info: Info) => void;
+    setRender: React.Dispatch<boolean>;
+    render: boolean;
 }
 
-export const NewFolder = ({ isOpen, onClose, rerenderFolder }: PropThin) => {
+export const NewFolder = ({ isOpen, onClose, setRender, render }: PropThin) => {
     const toast = useToast();
     const cancelRef = useRef(null);
     const nameRef = useRef<HTMLInputElement>(null);
+    const { callForUserInfo } = useAuth();
+
     const [err, setErr] = useState<boolean>(false);
 
     const handleSubmit = () => {
@@ -37,6 +40,7 @@ export const NewFolder = ({ isOpen, onClose, rerenderFolder }: PropThin) => {
                 const { data } = await AxiosHandler.post('/api/folder', {
                     name: nameRef.current?.value,
                 });
+                setRender(!render);
                 if (data.ok) {
                     toast({
                         title: 'File created successfully',
@@ -44,7 +48,7 @@ export const NewFolder = ({ isOpen, onClose, rerenderFolder }: PropThin) => {
                         duration: 9000,
                         isClosable: true,
                     });
-                    rerenderFolder(data);
+                    await callForUserInfo();
                 } else {
                     toast({
                         title: 'Couldnt create folder',
@@ -64,14 +68,14 @@ export const NewFolder = ({ isOpen, onClose, rerenderFolder }: PropThin) => {
             <AlertDialogOverlay>
                 <AlertDialogContent>
                     <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                        New Folder
+                        New Board
                     </AlertDialogHeader>
 
                     <AlertDialogBody>
-                        <Input type="text" placeholder="folder name" ref={nameRef} />
+                        <Input type="text" placeholder="Board name" ref={nameRef} />
                         {err && (
                             <Text color="red.500" fontWeight="bold">
-                                *Please enter a folder name
+                                *Please enter a Board name
                             </Text>
                         )}
                     </AlertDialogBody>
