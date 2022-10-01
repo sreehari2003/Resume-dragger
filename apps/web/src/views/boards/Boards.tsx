@@ -32,7 +32,7 @@ export const Boards = ({ onDrag, render }: Drag) => {
                 <Box mx="12">
                     <Board name={el.name} index={index}>
                         {el.File.map((file, dex) => (
-                            <File name={file.name} id={dex} resume={file.name} />
+                            <File name={file.name} id={dex} />
                         ))}
                     </Board>
                 </Box>

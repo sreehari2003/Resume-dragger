@@ -1,6 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useEffect, useState } from 'react';
-import { Button, Flex, useDisclosure, useToast } from '@chakra-ui/react';
+import { Button, Flex, useDisclosure } from '@chakra-ui/react';
 import { useSearchParams } from 'react-router-dom';
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import { MainLoader } from '../../components/Loader';
@@ -35,7 +35,8 @@ const Index = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchParams]);
 
-    const toast = useToast();
+    // const toast = useToast();
+
     // creating instance coz jwt getting malformed
     const AxiosHandler = ApiHandler(localStorage.getItem('token')!!);
 
@@ -47,19 +48,21 @@ const Index = () => {
             const resumeDrag = {
                 folder: result.destination?.droppableId,
                 resume: result.draggableId,
+                index: result.destination?.index,
             };
 
             try {
                 const { data } = await AxiosHandler.post('/api/swap', resumeDrag);
+
                 if (!data.ok) throw new Error();
                 mutate();
             } catch {
-                toast({
-                    title: 'couldnt move the file',
-                    status: 'error',
-                    duration: 9000,
-                    isClosable: true,
-                });
+                // toast({
+                //     title: 'couldnt move the file',
+                //     status: 'error',
+                //     duration: 9000,
+                //     isClosable: true,
+                // });
             }
         }
 
@@ -67,18 +70,19 @@ const Index = () => {
             const Info = {
                 resumename: result.draggableId,
                 folder: result.source.droppableId,
+                index: result.destination?.index,
             };
             try {
                 const { data } = await AxiosHandler.post('/api/backToResume', Info);
                 if (!data.ok) throw new Error();
                 mutate();
             } catch {
-                toast({
-                    title: 'couldnt move the file',
-                    status: 'error',
-                    duration: 9000,
-                    isClosable: true,
-                });
+                // toast({
+                //     title: 'couldnt move the file',
+                //     status: 'error',
+                //     duration: 9000,
+                //     isClosable: true,
+                // });
             }
         }
         // one board to anothe
@@ -90,6 +94,7 @@ const Index = () => {
                 init: result.source.droppableId,
                 final: result.destination?.droppableId,
                 file: result.draggableId,
+                index: result.destination?.index,
             };
 
             try {
@@ -99,12 +104,12 @@ const Index = () => {
 
                 mutate();
             } catch {
-                toast({
-                    title: 'couldnt move the file',
-                    status: 'error',
-                    duration: 9000,
-                    isClosable: true,
-                });
+                // toast({
+                //     title: 'couldnt move the file',
+                //     status: 'error',
+                //     duration: 9000,
+                //     isClosable: true,
+                // });
             }
         }
     };
@@ -122,12 +127,7 @@ const Index = () => {
                             {!isLoading && !error && (
                                 <Board name="Resumes" draggable={false} index={-1}>
                                     {resume?.data.map((el: Data, index: any) => (
-                                        <File
-                                            name={el.name}
-                                            resume={el.resume}
-                                            id={index}
-                                            key={el.id}
-                                        />
+                                        <File name={el.name} id={index} key={el.id} />
                                     ))}
                                 </Board>
                             )}

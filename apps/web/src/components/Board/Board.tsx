@@ -28,11 +28,16 @@ export const Board = ({ children, index, name, draggable = true }: ChilWithProp)
                     </Text>
                 </Box>
                 <Droppable droppableId={name}>
-                    {(prov) => (
-                        <div ref={prov.innerRef} {...prov.droppableProps}>
+                    {(prov, snapshot) => (
+                        <Box
+                            ref={prov.innerRef}
+                            {...prov.droppableProps}
+                            border={snapshot.isDraggingOver ? '1px solid red' : ''}
+                            borderRadius="12px"
+                        >
                             {children}
                             {prov.placeholder}
-                        </div>
+                        </Box>
                     )}
                 </Droppable>
             </Flex>
